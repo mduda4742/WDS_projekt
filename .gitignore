@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode,c++,qt,qtcreator
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,visualstudiocode,c++,qt,qtcreator
 
+# Folders 
+build/
+bin/
+
 ### C++ ###
 # Prerequisites
 *.d

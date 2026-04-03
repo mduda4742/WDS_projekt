@@ -5,7 +5,10 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QWidget>
+#include <QGridLayout>
+#include <QTabWidget>
 
 class Window : public QMainWindow {
     Q_OBJECT
@@ -15,10 +18,14 @@ public:
     virtual ~Window() = default;
 
 private:
-    QPushButton *m_button;
-    QLabel *m_label;
-    QVBoxLayout *m_layout;
-    QWidget *m_centralWidget;
+    QTabWidget *tabWidget;
+
+    QWidget *createHomePage();
+    QWidget *createSlamPage();
+    QWidget *createImuPage();
+
+    QLabel *accelLabel;
+    QLabel *gyroLabel;
 };
 
 #endif

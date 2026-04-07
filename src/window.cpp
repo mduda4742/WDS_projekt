@@ -38,7 +38,7 @@ QWidget* Window::createSlamPage() {
     layout->setSpacing(5);
 
     // Add map content placeholder on top
-    auto *mapPlaceholder = new QLabel("<p>SLAM visualization will go here.</p>", page);
+    mapPlaceholder = new QLabel("<p>SLAM visualization will go here.</p>", page);
     mapPlaceholder->setStyleSheet("background-color : lightgray; color : white;");
     mapPlaceholder->setAlignment(Qt::AlignCenter);
     layout->addWidget(mapPlaceholder, 0, 0, 1, 2);
@@ -122,4 +122,9 @@ QWidget* Window::createImuPage() {
     layout->addWidget(gyroLabel);
 
     return page;
+}
+
+void Window::updateTestData(const QString &msg) {
+    // Send msg
+    mapPlaceholder->setText("Ros: " + msg);
 }

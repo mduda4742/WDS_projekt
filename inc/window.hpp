@@ -17,6 +17,9 @@ public:
     Window(QWidget *parent = nullptr);
     virtual ~Window() = default;
 
+public slots:
+    void updateTestData(const QString &msg);
+
 private:
     QTabWidget *tabWidget;
 
@@ -24,6 +27,7 @@ private:
     QWidget *createSlamPage();
     QWidget *createImuPage();
 
+    QLabel *mapPlaceholder;
     QLabel *accelLabel;
     QLabel *gyroLabel;
 };

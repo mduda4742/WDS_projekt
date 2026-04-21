@@ -4,6 +4,8 @@
 # Folders 
 build/
 bin/
+html/
+latex/
 
 ### C++ ###
 # Prerequisites

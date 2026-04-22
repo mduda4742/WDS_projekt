@@ -17,6 +17,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 # Find ROS 2 libraries
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 # Add source files
 set(SOURCES
@@ -37,7 +38,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Gui
     rclcpp::rclcpp
     std_msgs::std_msgs__rosidl_typesupport_cpp
+    geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
 )
+
 
 # Add include folder to header search paths
 target_include_directories(${PROJECT_NAME} PRIVATE inc)

@@ -4,6 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <QObject>
 #include <std_msgs/msg/string.hpp> // testing
+#include <geometry_msgs/msg/vector3_stamped.hpp>
 
 
 /**
@@ -32,6 +33,8 @@ signals:
     */
     void testDataReceived(const QString &msg); // testing
 
+    void rpyReceived(double roll, double pitch, double yaw);
+
 private:
     /**
      * @brief Callback function for the test topic subscription. This function is called whenever 
@@ -44,6 +47,9 @@ private:
      * and triggers the testCallback function when new messages arrive. This is used for testing the integration between ROS and Qt.
      */
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr test_sub_; // testing
+
+    void rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr rpy);
+    rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr rpy_sub_;
 };
 
 #endif 

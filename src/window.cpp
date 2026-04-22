@@ -104,22 +104,85 @@ QWidget* Window::createSlamPage() {
 }
 
 QWidget* Window::createImuPage() {
-    // Create a simple IMU page
-    auto *page   = new QWidget(this);
-    auto *layout = new QVBoxLayout(page);
-    auto *title  = new QLabel("<h1>IMU Page</h1>", page);
-    title -> setAlignment(Qt::AlignCenter);
+    auto *page = new QWidget(this);
+    auto *mainHLayout = new QHBoxLayout(page);
 
-    layout-> addWidget(title);
+    // --- LEWA STRONA: Kamera (4:3) ---
+    auto *leftLayout = new QVBoxLayout();
 
-    // Add IMU data visualization placeholder
-    accelLabel = new QLabel("Accel: 0.0 : m/s^2", page);
-    gyroLabel  = new QLabel("Gyro: 0.0 : deg/s", page);
-    accelLabel->setAlignment(Qt::AlignCenter);
-    gyroLabel->setAlignment(Qt::AlignCenter);
+    cameraLabel = new QLabel("OCZEKIWANIE NA OBRAZ...", page);
+    cameraLabel->setMinimumSize(400, 300); // Startowy rozmiar 4:3
 
-    layout->addWidget(accelLabel);
-    layout->addWidget(gyroLabel);
+    // Stylistyka "pustego" okna kamery
+    cameraLabel->setStyleSheet(
+        "background-color: #000000; " // Czarny ekran jak w wyłączonym TV
+        "color: #555555; "           // Ciemnoszary tekst
+        "border: 3px solid #333333; "
+        "border-radius: 10px; "
+        "font-weight: bold;"
+        );
+    cameraLabel->setAlignment(Qt::AlignCenter);
+
+    // Ważne: to sprawi, że etykieta będzie się rozszerzać
+    cameraLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    leftLayout->addWidget(cameraLabel);
+    leftLayout->addStretch();
+
+    // Dodajemy lewą stronę z wagą 2 (będzie 2x szersza od prawej)
+    mainHLayout->addLayout(leftLayout, 2);
+
+
+    // --- PRAWA STRONA: Dane (Panel boczny) ---
+    auto *rightLayout = new QVBoxLayout();
+
+    // 1. Pasek górny
+    auto *topBar = new QHBoxLayout();
+    auto *title = new QLabel("LEO SYSTEM", page);
+    title->setStyleSheet("font-size: 18px; font-weight: bold; color: #444;");
+
+    batteryLabel = new QLabel("12.4 V", page);
+    batteryLabel->setFixedSize(65, 25);
+    batteryLabel->setStyleSheet("background: #222; color: #00FF00; border-radius: 3px; font-family: Monospace;");
+    batteryLabel->setAlignment(Qt::AlignCenter);
+
+    topBar->addWidget(title);
+    topBar->addStretch();
+    topBar->addWidget(batteryLabel);
+    rightLayout->addLayout(topBar);
+
+    rightLayout->addSpacing(20);
+
+    // 2. Sekcja POZA
+    auto *poseTitle = new QLabel("POSE", page);
+    poseTitle->setStyleSheet("color: #2980b9; font-weight: bold;");
+    rightLayout->addWidget(poseTitle);
+
+    xLabel   = new QLabel("X:  0.0 m", page);
+    yLabel   = new QLabel("Y:  0.0 m", page);
+    yawLabel = new QLabel("YAW:  0.0 °", page);
+
+    rightLayout->addWidget(xLabel);
+    rightLayout->addWidget(yLabel);
+    rightLayout->addWidget(yawLabel);
+
+    rightLayout->addSpacing(20);
+
+    // 3. Sekcja PRĘDKOŚCI
+    auto *velTitle = new QLabel("VELOCITY", page);
+    velTitle->setStyleSheet("color: #c0392b; font-weight: bold;");
+    rightLayout->addWidget(velTitle);
+
+    linearVelLabel  = new QLabel("LIN:  0.0 m/s", page);
+    angularVelLabel = new QLabel("ANG:  0.0 °/s", page);
+
+    rightLayout->addWidget(linearVelLabel);
+    rightLayout->addWidget(angularVelLabel);
+
+    rightLayout->addStretch();
+
+    // Dodajemy prawą stronę z wagą 1
+    mainHLayout->addLayout(rightLayout, 1);
 
     return page;
 }

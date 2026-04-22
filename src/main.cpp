@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
     // Connect ROS node signals to GUI slots
     QObject::connect(ros_node.get(), &RosNode::testDataReceived, 
-    &window, &Window::updateTestData);
+    &window, &Window::updateMapData);
 
     // Start ROS spinning in a separate thread (capture by value)
     std::thread ros_thread([ros_node]() {

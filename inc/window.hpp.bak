@@ -2,10 +2,13 @@
 #define WINDOW
 
 #include <QMainWindow>
+#include <QPushButton>
 #include <QLabel>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QWidget>
+#include <QGridLayout>
 #include <QTabWidget>
-#include "slam_page.hpp"
-#include "imu_page.hpp"
 
 /**
  * @class Window
@@ -30,22 +33,10 @@ public:
 
 public slots:
     /**
-     * @brief Slot to update the SLAM map data displayed in the GUI.
-     * @param msg The new map data message to display.
+     * @brief Slot to update the test data displayed in the GUI.
+     * @param msg The new test data message to display.
      */
-    void updateMapData(const QString &msg);
-
-    /**
-     * @brief Slot to update the IMU accel data displayed in the GUI.
-     * @param msg The new accel data message to display.
-     */
-    void updateAccelData(const QString &msg);
-
-    /**
-     * @brief Slot to update the IMU gyro data displayed in the GUI.
-     * @param msg The new gyro data message to display.
-     */
-    void updateGyroData(const QString &msg);
+    void updateTestData(const QString &msg);
 
 private:
     /**
@@ -55,19 +46,31 @@ private:
     QTabWidget *tabWidget;
 
     /**
-     * @brief Pointer to the SLAM page.
-     */
-    SlamPage *slamPage;
-
-    /**
-     * @brief Pointer to the IMU page.
-     */
-    ImuPage *imuPage;
-
-    /**
      * @brief Helper function to create the Home page of the GUI. 
      */
     QWidget *createHomePage();
+    /**
+     * @brief Helper function to create the SLAM page of the GUI. 
+     */
+    QWidget *createSlamPage();
+    /**
+     * @brief Helper function to create the IMU page of the GUI. 
+     */
+    QWidget *createImuPage();
+
+    /**
+     * @brief Pointer to the QLabel used as a placeholder for the SLAM visualization. 
+     */
+    QLabel *mapPlaceholder;
+
+    QLabel *cameraLabel;
+    QLabel *batteryLabel;
+    QLabel *xLabel;
+    QLabel *yLabel;
+    QLabel *yawLabel;
+
+    QLabel *linearVelLabel;
+    QLabel *angularVelLabel;
 };
 
 #endif

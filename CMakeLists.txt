@@ -23,8 +23,12 @@ find_package(geometry_msgs REQUIRED)
 set(SOURCES
     src/main.cpp
     src/window.cpp
+    src/slam_page.cpp
+    src/imu_page.cpp
     src/ros_node.cpp
     inc/window.hpp
+    inc/slam_page.hpp
+    inc/imu_page.hpp
     inc/ros_node.hpp
 )
 

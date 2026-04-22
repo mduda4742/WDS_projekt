@@ -62,14 +62,15 @@ private:
      * @brief Pointer to the QLabel used as a placeholder for the SLAM visualization. 
      */
     QLabel *mapPlaceholder;
-    /**
-     * @brief Pointers to the QLabel widgets used to display accelerometer data on the IMU page.
-     */
-    QLabel *accelLabel;
-    /**
-     * @brief Pointers to the QLabel widgets used to display gyroscope data on the IMU page.
-     */
-    QLabel *gyroLabel;
+
+    QLabel *cameraLabel;
+    QLabel *batteryLabel;
+    QLabel *xLabel;
+    QLabel *yLabel;
+    QLabel *yawLabel;
+
+    QLabel *linearVelLabel;
+    QLabel *angularVelLabel;
 };
 
 #endif

@@ -33,7 +33,7 @@ signals:
     */
     void testDataReceived(const QString &msg); // testing
 
-    void rpyReceived(double roll, double pitch, double yaw);
+    void rpyReceived(double yaw);
 
 private:
     /**

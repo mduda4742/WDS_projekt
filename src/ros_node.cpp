@@ -22,9 +22,7 @@ void RosNode::testCallback(const std_msgs::msg::String::SharedPtr msg) {
 }
 
 void RosNode::rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
-    double roll  = msg->vector.x;
-    double pitch = msg->vector.y;
     double yaw   = msg->vector.z;
 
-    emit rpyReceived(roll, pitch, yaw);
+    emit rpyReceived(yaw);
 }

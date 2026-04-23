@@ -5,6 +5,7 @@
 #include <QObject>
 #include <std_msgs/msg/string.hpp> // testing
 #include <geometry_msgs/msg/vector3_stamped.hpp>
+#include <std_msgs/msg/float32.hpp>
 
 
 /**
@@ -33,7 +34,9 @@ signals:
     */
     void testDataReceived(const QString &msg); // testing
 
-    void rpyReceived(double yaw);
+    void yawReceived(double yaw);
+
+    void batteryReceived(double voltage);
 
 private:
     /**
@@ -48,8 +51,11 @@ private:
      */
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr test_sub_; // testing
 
-    void rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr rpy);
-    rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr rpy_sub_;
+    void yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg);
+    rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr yaw_sub_;
+
+    void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
+    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;
 };
 
 #endif 

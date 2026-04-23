@@ -18,6 +18,12 @@ int main(int argc, char *argv[]) {
     QObject::connect(ros_node.get(), &RosNode::testDataReceived, 
     &window, &Window::updateMapData);
 
+    QObject::connect(ros_node.get(), &RosNode::yawReceived,
+                     &window, &Window::updateYawData);
+
+    QObject::connect(ros_node.get(), &RosNode::batteryReceived,
+                     &window, &Window::updateBatteryData);
+
     // Start ROS spinning in a separate thread (capture by value)
     std::thread ros_thread([ros_node]() {
         rclcpp::spin(ros_node);

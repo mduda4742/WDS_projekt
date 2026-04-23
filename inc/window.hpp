@@ -35,17 +35,22 @@ public slots:
      */
     void updateMapData(const QString &msg);
 
+    void updateYawData(double yaw);
+
+    void updateBatteryData(double voltage);
+
     /**
      * @brief Slot to update the IMU accel data displayed in the GUI.
      * @param msg The new accel data message to display.
      */
-    void updateAccelData(const QString &msg);
+    // void updateAccelData(const QString &msg);
 
     /**
      * @brief Slot to update the IMU gyro data displayed in the GUI.
      * @param msg The new gyro data message to display.
      */
-    void updateGyroData(const QString &msg);
+    // void updateGyroData(const QString &msg);
+
 
 private:
     /**

@@ -13,12 +13,28 @@ public:
     virtual ~ImuPage() = default;
 
 public slots:
+
+    /*
     void updateAccelData(const QString &msg);
     void updateGyroData(const QString &msg);
+    */
+
+    void updateYaw(double yaw);
+    void updateVoltage(double voltage);
 
 private:
     QLabel *accelLabel;
     QLabel *gyroLabel;
+
+    QLabel *cameraLabel;
+    QLabel *batteryLabel;
+    
+    QLabel *xLabel;
+    QLabel *yLabel;
+    QLabel *yawLabel;
+
+    QLabel *linearVelLabel;
+    QLabel *angularVelLabel;
 };
 
 #endif

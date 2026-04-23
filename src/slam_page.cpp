@@ -1,15 +1,125 @@
 #include "slam_page.hpp"
+#include <QPainter>
+#include <cmath>
+#include <algorithm>
 
+// MapWidget Implementation
+MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false) {
+    setStyleSheet("background-color: black;");
+    setMinimumSize(400, 400);
+}
+
+void MapWidget::paintEvent(QPaintEvent *event) {
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    
+    // Draw background
+    painter.fillRect(rect(), Qt::black);
+    
+    // Draw grid
+    painter.setPen(QPen(Qt::darkGray, 1));
+    int gridSpacing = 50;
+    for (int x = 0; x < width(); x += gridSpacing) {
+        painter.drawLine(x, 0, x, height());
+    }
+    for (int y = 0; y < height(); y += gridSpacing) {
+        painter.drawLine(0, y, width(), y);
+    }
+    
+    // Draw center point (robot position)
+    painter.setPen(QPen(Qt::green, 4));
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+    painter.drawPoint(centerX, centerY);
+    painter.drawEllipse(centerX - 10, centerY - 10, 20, 20);
+    
+    // Draw LIDAR scan if data is available
+    if (hasData_) {
+        drawLaserScan(painter);
+    }
+}
+
+void MapWidget::drawLaserScan(QPainter &painter) {
+    painter.setPen(QPen(Qt::red, 2));
+    
+    float maxRange = 10.0f; // meters
+    float scale = std::min(width(), height()) / (2.0f * maxRange);
+    
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+    
+    QPoint prevPoint(centerX, centerY);
+    bool firstPoint = true;
+    
+    for (size_t i = 0; i < ranges_.size(); ++i) {
+        float range = ranges_[i];
+        
+        // Skip invalid readings (infinity or NaN)
+        if (!std::isfinite(range) || range <= 0.0f) {
+            firstPoint = true;
+            continue;
+        }
+        
+        // Calculate angle for this reading
+        float angle = angle_min_ + i * angle_increment_;
+        
+        // Convert to Cartesian coordinates (with y-axis pointing up in map)
+        float x = range * std::cos(angle);
+        float y = range * std::sin(angle);
+        
+        // Scale and convert to screen coordinates
+        int screenX = centerX + static_cast<int>(x * scale);
+        int screenY = centerY - static_cast<int>(y * scale);  // Invert Y for screen coords
+        
+        QPoint currentPoint(screenX, screenY);
+        
+        if (!firstPoint) {
+            painter.drawLine(prevPoint, currentPoint);
+        }
+        
+        prevPoint = currentPoint;
+        firstPoint = false;
+    }
+    
+    // Draw points
+    painter.setPen(QPen(Qt::cyan, 3));
+    for (size_t i = 0; i < ranges_.size(); ++i) {
+        float range = ranges_[i];
+        
+        if (!std::isfinite(range) || range <= 0.0f) {
+            continue;
+        }
+        
+        float angle = angle_min_ + i * angle_increment_;
+        float x = range * std::cos(angle);
+        float y = range * std::sin(angle);
+        
+        int screenX = centerX + static_cast<int>(x * scale);
+        int screenY = centerY - static_cast<int>(y * scale);
+        
+        painter.drawPoint(screenX, screenY);
+    }
+}
+
+void MapWidget::updateLaserScan(const std::vector<float> &ranges, 
+                                 float angle_min, float angle_max, float angle_increment) {
+    ranges_ = ranges;
+    angle_min_ = angle_min;
+    angle_max_ = angle_max;
+    angle_increment_ = angle_increment;
+    hasData_ = true;
+    update();  // Trigger repaint
+}
+
+// SlamPage Implementation
 SlamPage::SlamPage(QWidget *parent) : QWidget(parent) {
     auto *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(5);
 
-    // Add map content placeholder on top (takes 3/4 of the screen)
-    mapPlaceholder = new QLabel("<p>SLAM visualization will go here.</p>", this);
-    mapPlaceholder->setStyleSheet("background-color : lightgray; color : white;");
-    mapPlaceholder->setAlignment(Qt::AlignCenter);
-    layout->addWidget(mapPlaceholder, 0, 0, 1, 2);
+    // Add map widget on top (takes 3/4 of the screen)
+    mapWidget = new MapWidget(this);
+    layout->addWidget(mapWidget, 0, 0, 1, 2);
     layout->setRowStretch(0, 3);
 
     // Add title on bottom left
@@ -76,6 +186,7 @@ void SlamPage::setupControls(QGridLayout *layout) {
     layout->addWidget(btnDownRight, 2, 2);
 }
 
-void SlamPage::updateMapData(const QString &msg) {
-    mapPlaceholder->setText("Ros: " + msg);
+void SlamPage::updateLaserData(const std::vector<float> &ranges, 
+                               float angle_min, float angle_max, float angle_increment) {
+    mapWidget->updateLaserScan(ranges, angle_min, angle_max, angle_increment);
 }

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QTabWidget>
+#include <vector>
 #include "slam_page.hpp"
 #include "imu_page.hpp"
 
@@ -46,6 +47,12 @@ public slots:
      * @param msg The new gyro data message to display.
      */
     void updateGyroData(const QString &msg);
+
+    /**
+     * @brief Slot to update the SLAM map with LIDAR scan data.
+     */
+    void updateLaserData(const std::vector<float> &ranges, 
+                        float angle_min, float angle_max, float angle_increment);
 
 private:
     /**

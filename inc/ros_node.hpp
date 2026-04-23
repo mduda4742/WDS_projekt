@@ -5,12 +5,9 @@
 #include <QObject>
 #include <std_msgs/msg/string.hpp>
 #include <geometry_msgs/msg/vector3_stamped.hpp>
-<<<<<<< HEAD
 #include <std_msgs/msg/float32.hpp>
-=======
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <vector>
->>>>>>> lidar_sim
 
 
 /**
@@ -32,7 +29,6 @@ public:
     virtual ~RosNode() = default;
     
 signals:
-<<<<<<< HEAD
    /**
     * @brief Signal emitted when new data is received from the ROS topic. The message content 
     * is passed as a QString to be easily used in the Qt GUI.
@@ -43,17 +39,14 @@ signals:
     void yawReceived(double yaw);
 
     void batteryReceived(double voltage);
-=======
     void rpyReceived(double yaw);
     void laserScanReceived(const std::vector<float> &ranges, 
                           float angle_min, float angle_max, float angle_increment);
->>>>>>> lidar_sim
 
 private:
     void rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg);
     void laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
 
-<<<<<<< HEAD
     /**
      * @brief ROS 2 subscription for the test topic. This subscription listens for messages on the "test_topic" 
      * and triggers the testCallback function when new messages arrive. This is used for testing the integration between ROS and Qt.
@@ -65,10 +58,8 @@ private:
 
     void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;
-=======
     rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr rpy_sub_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
->>>>>>> lidar_sim
 };
 
 #endif 

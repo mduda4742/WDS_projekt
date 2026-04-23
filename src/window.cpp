@@ -57,13 +57,10 @@ void Window::updateAccelData(const QString &msg) {
 void Window::updateGyroData(const QString &msg) {
     imuPage->updateGyroData(msg);
 }
-<<<<<<< HEAD
 */
 
-=======
 
 void Window::updateLaserData(const std::vector<float> &ranges, 
                             float angle_min, float angle_max, float angle_increment) {
     slamPage->updateLaserData(ranges, angle_min, angle_max, angle_increment);
 }
->>>>>>> lidar_sim

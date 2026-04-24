@@ -6,6 +6,7 @@
 #include <QTabWidget>
 #include "slam_page.hpp"
 #include "imu_page.hpp"
+#include "odomState.hpp"
 
 /**
  * @class Window
@@ -35,7 +36,7 @@ public slots:
      */
     void updateMapData(const QString &msg);
 
-    void updateYawData(double yaw);
+    void updateOdomData(odomState state);
 
     void updateBatteryData(double voltage);
 
@@ -43,13 +44,11 @@ public slots:
      * @brief Slot to update the IMU accel data displayed in the GUI.
      * @param msg The new accel data message to display.
      */
-    // void updateAccelData(const QString &msg);
 
     /**
      * @brief Slot to update the IMU gyro data displayed in the GUI.
      * @param msg The new gyro data message to display.
      */
-    // void updateGyroData(const QString &msg);
 
 
 private:

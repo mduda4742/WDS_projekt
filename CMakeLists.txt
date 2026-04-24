@@ -18,6 +18,11 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 # Add source files
 set(SOURCES
@@ -30,19 +35,26 @@ set(SOURCES
     inc/slam_page.hpp
     inc/imu_page.hpp
     inc/ros_node.hpp
+    inc/odomState.hpp
 )
 
 # Create executable
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES}
+    inc/odomState.hpp)
 
 # Link Qt libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Widgets
     Qt6::Core
     Qt6::Gui
     rclcpp::rclcpp
     std_msgs::std_msgs__rosidl_typesupport_cpp
     geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
+    nav_msgs::nav_msgs__rosidl_typesupport_cpp
+
+    tf2::tf2
+    tf2_ros::tf2_ros
+    tf2_geometry_msgs::tf2_geometry_msgs
 )
 
 

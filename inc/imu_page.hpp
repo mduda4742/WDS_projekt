@@ -5,6 +5,8 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
+#include "odomState.hpp"
+
 class ImuPage : public QWidget {
     Q_OBJECT
 
@@ -14,19 +16,12 @@ public:
 
 public slots:
 
-    /*
-    void updateAccelData(const QString &msg);
-    void updateGyroData(const QString &msg);
-    */
-
-    void updateYaw(double yaw);
-    void updateVoltage(double voltage);
+    void updateOdom(odomState state);
+    void updateBattery(double voltage);
 
 private:
-    QLabel *accelLabel;
-    QLabel *gyroLabel;
-
     QLabel *cameraLabel;
+
     QLabel *batteryLabel;
     
     QLabel *xLabel;

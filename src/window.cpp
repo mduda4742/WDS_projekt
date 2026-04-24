@@ -41,21 +41,13 @@ void Window::updateMapData(const QString &msg) {
     slamPage->updateMapData(msg);
 }
 
+void Window::updateOdomData(odomState state) {
+    imuPage->updateOdom(state);
+}
+
 void Window::updateBatteryData(double voltage) {
-    imuPage->updateVoltage(voltage);
+    imuPage->updateBattery(voltage);
 }
 
-void Window::updateYawData(double yaw) {
-    imuPage->updateYaw(yaw);
-}
 
-/*
-void Window::updateAccelData(const QString &msg) {
-    imuPage->updateAccelData(msg);
-}
-
-void Window::updateGyroData(const QString &msg) {
-    imuPage->updateGyroData(msg);
-}
-*/
 

@@ -3,10 +3,10 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <QObject>
-#include <std_msgs/msg/string.hpp> // testing
-#include <geometry_msgs/msg/vector3_stamped.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include <std_msgs/msg/float32.hpp>
 
+#include "odomState.hpp"
 
 /**
  * @class RosNode
@@ -32,9 +32,7 @@ signals:
     * is passed as a QString to be easily used in the Qt GUI.
     * @param msg The message content received from the ROS topic, converted to QString format.
     */
-    void testDataReceived(const QString &msg); // testing
-
-    void yawReceived(double yaw);
+    void odomReceived(odomState odom);
 
     void batteryReceived(double voltage);
 
@@ -43,19 +41,16 @@ private:
      * @brief Callback function for the test topic subscription. This function is called whenever 
      * a new message is received on the "test_topic". It emits the testDataReceived signal with the message content.
      */
-    void testCallback(const std_msgs::msg::String::SharedPtr msg); // testing
+    void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
     /**
      * @brief ROS 2 subscription for the test topic. This subscription listens for messages on the "test_topic" 
      * and triggers the testCallback function when new messages arrive. This is used for testing the integration between ROS and Qt.
      */
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr test_sub_; // testing
-
-    void yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg);
-    rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr yaw_sub_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
 
     void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
-    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;
+    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr battery_sub_;
 };
 
 #endif 

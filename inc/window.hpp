@@ -31,12 +31,6 @@ public:
 
 public slots:
     /**
-     * @brief Slot to update the SLAM map data displayed in the GUI.
-     * @param msg The new map data message to display.
-     */
-    void updateMapData(const QString &msg);
-
-    /**
      * @brief Slot to update the IMU accel data displayed in the GUI.
      * @param msg The new accel data message to display.
      */

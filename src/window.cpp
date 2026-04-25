@@ -37,10 +37,6 @@ QWidget* Window::createHomePage() {
     return page;
 }
 
-void Window::updateMapData(const QString &msg) {
-    slamPage->updateMapData(msg);
-}
-
 void Window::updateAccelData(const QString &msg) {
     imuPage->updateAccelData(msg);
 }

@@ -40,7 +40,7 @@ public:
     virtual ~SlamPage() = default;
 
 public slots:
-    void updateMapData(const QString &msg);
+
     void updateLaserData(const std::vector<float> &ranges, 
                         float angle_min, float angle_max, float angle_increment);
 

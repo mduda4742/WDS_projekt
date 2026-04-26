@@ -1,29 +1,37 @@
 #include "window.hpp"
+#include "ros_node.hpp"
 #include <QVBoxLayout>
 #include <QLabel>
 
+/**
+ * @brief Window constructor. Initializes main window with title, size, and three tabs:
+ * Home (welcome page), SLAM (LIDAR visualization), and IMU (sensor data display).
+ * @param parent Parent widget
+ */
 Window::Window(QWidget *parent) : QMainWindow(parent) {
-    // Set up the main window
     setWindowTitle("Leo Rover Base - Qt GUI");
     resize(800, 600);
 
-    // Create tab widget
+    // Create tab widget to hold all pages
     tabWidget = new QTabWidget(this);
     tabWidget->addTab(createHomePage(), "Home");
     
-    // Create SLAM page and add to tab
+    // Create SLAM page for LIDAR visualization and movement controls
     slamPage = new SlamPage(this);
     tabWidget->addTab(slamPage, "SLAM");
     
-    // Create IMU page and add to tab
+    // Create IMU page for sensor data display
     imuPage = new ImuPage(this);
     tabWidget->addTab(imuPage, "IMU");
     
     setCentralWidget(tabWidget);
 }
 
+/**
+ * @brief Create home page with welcome message.
+ * @return QWidget pointer to the home page
+ */
 QWidget* Window::createHomePage() {
-    // Create a simple home page with a welcome message
     auto *page = new QWidget(this);
     auto *layout = new QVBoxLayout(page);
     auto *title = new QLabel("<h1>Welcome to the WDS Project Home Page!</h1>", page);
@@ -37,15 +45,30 @@ QWidget* Window::createHomePage() {
     return page;
 }
 
+/// @brief Forward acceleration data to IMU page
 void Window::updateAccelData(const QString &msg) {
     imuPage->updateAccelData(msg);
 }
 
+/// @brief Forward gyroscope data to IMU page
 void Window::updateGyroData(const QString &msg) {
     imuPage->updateGyroData(msg);
 }
 
+/**
+ * @brief Forward LIDAR scan data to SLAM page for visualization.
+ * 
+ * @param ranges Vector of distance measurements in meters
+ * @param angle_min Minimum scan angle in radians
+ * @param angle_max Maximum scan angle in radians
+ * @param angle_increment Angular resolution in radians
+ */
 void Window::updateLaserData(const std::vector<float> &ranges, 
                             float angle_min, float angle_max, float angle_increment) {
     slamPage->updateLaserData(ranges, angle_min, angle_max, angle_increment);
+}
+
+/// @brief Set ROS node pointer so pages can publish movement commands
+void Window::setRosNode(RosNode *node) {
+    slamPage->setRosNode(node);
 }

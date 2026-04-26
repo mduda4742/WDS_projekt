@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     
     // Create main window
     Window window;
+    window.setRosNode(ros_node.get());
 
     // Connect ROS node signals to GUI slots
     QObject::connect(ros_node.get(), &RosNode::rpyReceived, 

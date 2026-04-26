@@ -10,63 +10,77 @@
 
 /**
  * @class Window
- * @brief Main application window class that inherits from QMainWindow. 
- * This class sets up the GUI with multiple tabs for different functionalities 
- * such as Home, SLAM, and IMU data display. It also includes slots to update 
- * the GUI based on signals emitted from the ROS node.
+ * @brief Main application window and central signal routing hub.
+ * 
+ * This is the primary GUI container with a tab-based interface for different
+ * functionalities: Home (welcome), SLAM (LIDAR visualization), and IMU (sensor data).
+ * Routes data signals from ROS node callbacks to appropriate page display handlers.
  */
 class Window : public QMainWindow {
     Q_OBJECT
 
 public:
     /**
-     * @brief Constructor for the Window class. Initializes the main window, sets up the 
-     * tab widget, and creates the different pages for Home, SLAM, and IMU.
+     * @brief Constructor for the Window class. Initializes the main window with title,
+     * size, and creates three tabs: Home page, SLAM page, and IMU page.
+     * @param parent Parent widget
      */
     Window(QWidget *parent = nullptr);
     /**
-     * @brief Destructor for the Window class. Currently defaulted, but can be used to clean up any resources if needed in the future.
+     * @brief Destructor for the Window class.
      */
     virtual ~Window() = default;
+    
+    /**
+     * @brief Set the ROS node pointer and forward it to pages for command publishing.
+     * Must be called before movement controls will work.
+     * @param node Pointer to RosNode instance
+     */
+    void setRosNode(class RosNode *node);
 
 public slots:
     /**
-     * @brief Slot to update the IMU accel data displayed in the GUI.
-     * @param msg The new accel data message to display.
+     * @brief Forward IMU acceleration data to the IMU page for display.
+     * @param msg Formatted acceleration information string
      */
     void updateAccelData(const QString &msg);
 
     /**
-     * @brief Slot to update the IMU gyro data displayed in the GUI.
-     * @param msg The new gyro data message to display.
+     * @brief Forward IMU gyroscope data to the IMU page for display.
+     * @param msg Formatted gyroscope information string
      */
     void updateGyroData(const QString &msg);
 
     /**
-     * @brief Slot to update the SLAM map with LIDAR scan data.
+     * @brief Forward LIDAR scan data to the SLAM page for visualization.
+     * Routes to the map widget for 2D point cloud rendering.
+     * @param ranges Vector of distance measurements in meters
+     * @param angle_min Minimum scan angle in radians
+     * @param angle_max Maximum scan angle in radians
+     * @param angle_increment Angular resolution in radians
      */
     void updateLaserData(const std::vector<float> &ranges, 
                         float angle_min, float angle_max, float angle_increment);
 
 private:
     /**
-     * @brief Pointer to the QTabWidget that holds the different pages of the GUI. 
-     * This allows for easy access and manipulation of the tabs and their contents.
+     * @brief Pointer to the QTabWidget that manages Home, SLAM, and IMU pages.
      */
     QTabWidget *tabWidget;
 
     /**
-     * @brief Pointer to the SLAM page.
+     * @brief Pointer to the SLAM visualization page.
      */
     SlamPage *slamPage;
 
     /**
-     * @brief Pointer to the IMU page.
+     * @brief Pointer to the IMU sensor data display page.
      */
     ImuPage *imuPage;
 
     /**
-     * @brief Helper function to create the Home page of the GUI. 
+     * @brief Create the Home page with welcome message.
+     * @return QWidget pointer to the home page
      */
     QWidget *createHomePage();
 };

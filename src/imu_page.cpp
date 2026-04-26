@@ -74,13 +74,14 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
 void ImuPage::updateOdom(odomState state) {
     double yaw_deg = state.yaw * (180.0 / M_PI);
+    double angular_vel_deg = state.angular_vel * (180.0 / M_PI);
 
     xLabel->setText(QString("X:  %1 m").arg(state.x, 0, 'f', 1));
     yLabel->setText(QString("Y:  %1 m").arg(state.y, 0, 'f', 1));
     yawLabel->setText(QString("YAW:  %1 °").arg(yaw_deg, 0, 'f', 1));
 
     linearVelLabel->setText(QString("LIN:  %1 m/s").arg(state.linear_vel, 0, 'f', 1));
-    angularVelLabel->setText(QString("ANG:  %1 °/s").arg(state.angular_vel, 0, 'f', 1));
+    angularVelLabel->setText(QString("ANG:  %1 °/s").arg(angular_vel_deg, 0, 'f', 1));
 }
 
 void ImuPage::updateBattery(double voltage) {

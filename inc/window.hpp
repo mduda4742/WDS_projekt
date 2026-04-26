@@ -36,20 +36,17 @@ public slots:
      */
     void updateMapData(const QString &msg);
 
+    /**
+     * @brief Slot to update the Odometry and Robot State data.
+     * @param state The current pose and velocity state of the robot.
+     */
     void updateOdomData(odomState state);
 
+    /**
+     * @brief Slot to update the battery voltage display.
+     * @param voltage Current battery voltage in Volts [V].
+     */
     void updateBatteryData(double voltage);
-
-    /**
-     * @brief Slot to update the IMU accel data displayed in the GUI.
-     * @param msg The new accel data message to display.
-     */
-
-    /**
-     * @brief Slot to update the IMU gyro data displayed in the GUI.
-     * @param msg The new gyro data message to display.
-     */
-
 
 private:
     /**

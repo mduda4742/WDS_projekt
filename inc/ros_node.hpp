@@ -10,8 +10,9 @@
 
 /**
  * @class RosNode
- * @brief Main ROS 2 node class that integrates with Qt. This node subscribes to a test 
- * topic and emits a Qt signal when new data is received, allowing the GUI to update accordingly.
+ * @brief Main ROS 2 node class that integrates Leo Rover data with the Qt GUI.
+ * * This node subscribes to various topics, processes the incoming data,
+ * and emits Qt signals to be consumed by the GUI thread.
  */
 class RosNode : public QObject, public rclcpp::Node {
     Q_OBJECT
@@ -27,29 +28,35 @@ public:
     virtual ~RosNode() = default;
     
 signals:
-   /**
-    * @brief Signal emitted when new data is received from the ROS topic. The message content 
-    * is passed as a QString to be easily used in the Qt GUI.
-    * @param msg The message content received from the ROS topic, converted to QString format.
+
+    /**
+    * @brief Signal emitted when new odometry data is processed.
+    * @param odom The processed state containing x, y, yaw, and velocities.
     */
     void odomReceived(odomState odom);
 
+    /**
+    * @brief Signal emitted when a new battery voltage reading is received.
+    * @param voltage The battery voltage in Volts [V].
+    */
     void batteryReceived(double voltage);
 
 private:
+
     /**
-     * @brief Callback function for the test topic subscription. This function is called whenever 
-     * a new message is received on the "test_topic". It emits the testDataReceived signal with the message content.
+     * @brief Callback for the odometry subscription.
+     * @param msg Shared pointer to the incoming nav_msgs/Odometry message.
      */
     void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
     /**
-     * @brief ROS 2 subscription for the test topic. This subscription listens for messages on the "test_topic" 
-     * and triggers the testCallback function when new messages arrive. This is used for testing the integration between ROS and Qt.
+     * @brief Callback for the battery voltage subscription.
+     * @param msg Shared pointer to the incoming std_msgs/Float32 message.
      */
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
-
     void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
+
+    // ROS 2 Subscriptions
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr battery_sub_;
 };
 

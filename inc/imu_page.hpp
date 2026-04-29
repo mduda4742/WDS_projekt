@@ -27,20 +27,32 @@ public:
     virtual ~ImuPage() = default;
 
 public slots:
-    /**
-     * @brief Update accel (acceleration) data display.
-     * @param msg Formatted acceleration data string
-     */
+
+    /*
     void updateAccelData(const QString &msg);
     /**
      * @brief Update gyro (rotational velocity) data display.
      * @param msg Formatted gyroscope data string
      */
     void updateGyroData(const QString &msg);
+    
+
+    void updateYaw(double yaw);
+    void updateVoltage(double voltage);
 
 private:
-    QLabel *accelLabel;  ///< Label for acceleration data
-    QLabel *gyroLabel;   ///< Label for gyroscope data
+    QLabel *accelLabel;
+    QLabel *gyroLabel;
+
+    QLabel *cameraLabel;
+    QLabel *batteryLabel;
+    
+    QLabel *xLabel;
+    QLabel *yLabel;
+    QLabel *yawLabel;
+
+    QLabel *linearVelLabel;
+    QLabel *angularVelLabel;
 };
 
 #endif

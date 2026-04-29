@@ -14,14 +14,19 @@ using std::placeholders::_1;
  */
 RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
 
-    // Subscribe to IMU RPY (roll, pitch, yaw) data
-    rpy_sub_ = this->create_subscription<geometry_msgs::msg::Vector3Stamped>(
+    yaw_sub_ = this->create_subscription<geometry_msgs::msg::Vector3Stamped>(
         "imu/rpy",
         10,
-        std::bind(&RosNode::rpyCallback, this, _1)
+        std::bind(&RosNode::yawCallback, this, _1)
     );
 
-    // Subscribe to LIDAR laser scan data
+
+    voltage_sub_ = this->create_subscription<std_msgs::msg::Float32>(
+        "firmware/battery_averaged",
+        rclcpp::SensorDataQoS(),
+        std::bind(&RosNode::batteryCallback, this, _1)
+        );
+
     laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "/scan",
         10,
@@ -37,14 +42,24 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
     RCLCPP_INFO(this->get_logger(), "RosNode has been started and is listening to topics");
 }
 
-/**
- * @brief Callback for IMU RPY data. Extracts yaw and emits signal.
- * @param msg The Vector3Stamped message containing roll, pitch, yaw
- */
+
+void RosNode::yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
+    double yaw = msg->vector.z;
+
+    emit yawReceived(yaw);
+}
+
+void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
+    double voltage = msg->data;
+
+    emit batteryReceived(voltage);
+}
+
 void RosNode::rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
     // Extract yaw angle from the message and emit signal
     double yaw = msg->vector.z;
     emit rpyReceived(yaw);
+
 }
 
 /**

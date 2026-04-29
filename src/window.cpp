@@ -45,14 +45,12 @@ QWidget* Window::createHomePage() {
     return page;
 }
 
-/// @brief Forward acceleration data to IMU page
-void Window::updateAccelData(const QString &msg) {
-    imuPage->updateAccelData(msg);
+void Window::updateBatteryData(double voltage) {
+    imuPage->updateVoltage(voltage);
 }
 
-/// @brief Forward gyroscope data to IMU page
-void Window::updateGyroData(const QString &msg) {
-    imuPage->updateGyroData(msg);
+void Window::updateYawData(double yaw) {
+    imuPage->updateYaw(yaw);
 }
 
 /**

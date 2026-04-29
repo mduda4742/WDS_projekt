@@ -39,17 +39,9 @@ public:
     void setRosNode(class RosNode *node);
 
 public slots:
-    /**
-     * @brief Forward IMU acceleration data to the IMU page for display.
-     * @param msg Formatted acceleration information string
-     */
-    void updateAccelData(const QString &msg);
+    void updateYawData(double yaw);
 
-    /**
-     * @brief Forward IMU gyroscope data to the IMU page for display.
-     * @param msg Formatted gyroscope information string
-     */
-    void updateGyroData(const QString &msg);
+    void updateBatteryData(double voltage);
 
     /**
      * @brief Forward LIDAR scan data to the SLAM page for visualization.

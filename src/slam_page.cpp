@@ -10,7 +10,7 @@
  * @brief MapWidget constructor. Initializes the widget with black background for LIDAR visualization.
  * @param parent Parent widget
  */
-MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false) {
+MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false), hasPath_(false) {
     setStyleSheet("background-color: black;");
     setMinimumSize(400, 400);
 }
@@ -43,6 +43,11 @@ void MapWidget::paintEvent(QPaintEvent *event) {
     painter.drawPoint(centerX, centerY);
     painter.drawEllipse(centerX - 10, centerY - 10, 20, 20);
     
+    // Draw SLAM path if valid data is available
+    if (hasPath_) {
+        drawPath(painter);
+    }
+    
     // Draw LIDAR point cloud if valid data is available
     if (hasData_) {
         drawLaserScan(painter);
@@ -61,7 +66,7 @@ void MapWidget::drawLaserScan(QPainter &painter) {
     // Draw connecting lines between consecutive LIDAR measurements
     painter.setPen(QPen(Qt::red, 2));
     
-    float maxRange = 10.0f; // Maximum visible range in meters
+    float maxRange = 25.0f; // Maximum visible range in meters (increased from 10.0f)
     float scale = std::min(width(), height()) / (2.0f * maxRange);
     
     int centerX = width() / 2;
@@ -126,6 +131,48 @@ void MapWidget::drawLaserScan(QPainter &painter) {
 }
 
 /**
+ * @brief Draw the SLAM path on the map.
+ * 
+ * Draws the path as a white/yellow trace showing the robot's traveled route.
+ * 
+ * @param painter Qt painter object for drawing
+ */
+void MapWidget::drawPath(QPainter &painter) {
+    if (path_x_.empty() || path_y_.empty() || path_x_.size() != path_y_.size()) {
+        return;  // No valid path data
+    }
+    
+    // Draw path line in yellow
+    painter.setPen(QPen(Qt::yellow, 2));
+    
+    float maxRange = 10.0f;  // Same scale as LIDAR visualization
+    float scale = std::min(width(), height()) / (2.0f * maxRange);
+    
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+    
+    // Draw path as connected line segments
+    for (size_t i = 0; i < path_x_.size() - 1; ++i) {
+        // Convert world coordinates to screen coordinates
+        int x1 = centerX + static_cast<int>(path_x_[i] * scale);
+        int y1 = centerY - static_cast<int>(path_y_[i] * scale);
+        
+        int x2 = centerX + static_cast<int>(path_x_[i + 1] * scale);
+        int y2 = centerY - static_cast<int>(path_y_[i + 1] * scale);
+        
+        painter.drawLine(x1, y1, x2, y2);
+    }
+    
+    // Draw path points as small white dots
+    painter.setPen(QPen(Qt::white, 2));
+    for (size_t i = 0; i < path_x_.size(); ++i) {
+        int x = centerX + static_cast<int>(path_x_[i] * scale);
+        int y = centerY - static_cast<int>(path_y_[i] * scale);
+        painter.drawPoint(x, y);
+    }
+}
+
+/**
  * @brief Store LIDAR scan data and trigger widget repaint.
  * 
  * @param ranges Vector of distance measurements in meters
@@ -140,6 +187,19 @@ void MapWidget::updateLaserScan(const std::vector<float> &ranges,
     angle_max_ = angle_max;
     angle_increment_ = angle_increment;
     hasData_ = true;
+    update();  // Queue repaint event
+}
+
+/**
+ * @brief Store SLAM path data and trigger widget repaint.
+ * 
+ * @param path_x Vector of X coordinates along the path
+ * @param path_y Vector of Y coordinates along the path
+ */
+void MapWidget::updatePath(const std::vector<double> &path_x, const std::vector<double> &path_y) {
+    path_x_ = path_x;
+    path_y_ = path_y;
+    hasPath_ = true;
     update();  // Queue repaint event
 }
 
@@ -300,6 +360,16 @@ void SlamPage::setupControls(QGridLayout *layout) {
 void SlamPage::updateLaserData(const std::vector<float> &ranges, 
                                float angle_min, float angle_max, float angle_increment) {
     mapWidget->updateLaserScan(ranges, angle_min, angle_max, angle_increment);
+}
+
+/**
+ * @brief Forward SLAM path data to MapWidget for visualization.
+ * 
+ * @param path_x Vector of X coordinates along the path
+ * @param path_y Vector of Y coordinates along the path
+ */
+void SlamPage::updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y) {
+    mapWidget->updatePath(path_x, path_y);
 }
 
 /// @brief Send forward velocity command to robot

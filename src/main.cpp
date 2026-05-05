@@ -27,11 +27,17 @@ int main(int argc, char *argv[]) {
     QObject::connect(ros_node.get(), &RosNode::laserScanReceived,
                      &window, &Window::updateLaserData);
 
+    QObject::connect(ros_node.get(), &RosNode::pathReceived,
+                     &window, &Window::updatePathData);
+
     QObject::connect(ros_node.get(), &RosNode::yawReceived,
                      &window, &Window::updateYawData);
 
     QObject::connect(ros_node.get(), &RosNode::batteryReceived,
                      &window, &Window::updateBatteryData);
+
+    QObject::connect(ros_node.get(), &RosNode::robotPoseReceived,
+                     &window, &Window::updateRobotPose);
 
     // Start ROS spinning in a separate thread
     std::thread ros_thread([ros_node]() {

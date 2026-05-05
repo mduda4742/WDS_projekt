@@ -39,6 +39,7 @@ public slots:
 
     void updateYaw(double yaw);
     void updateVoltage(double voltage);
+    void updatePosition(double x, double y);
 
 private:
     QLabel *accelLabel;

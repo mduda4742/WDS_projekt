@@ -86,6 +86,11 @@ void ImuPage::updateVoltage(double voltage) {
     batteryLabel->setText(QString("%1 V").arg(voltage, 0, 'f', 1));
 }
 
+void ImuPage::updatePosition(double x, double y) {
+    xLabel->setText(QString("X:  %1 m").arg(x, 0, 'f', 2));
+    yLabel->setText(QString("Y:  %1 m").arg(y, 0, 'f', 2));
+}
+
 /*
 void ImuPage::updateAccelData(const QString &msg) {
     accelLabel->setText("Accel: " + msg);
@@ -98,4 +103,3 @@ void ImuPage::updateAccelData(const QString &msg) {
 void ImuPage::updateGyroData(const QString &msg) {
     gyroLabel->setText("Gyro: " + msg);
 }
-

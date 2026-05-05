@@ -8,6 +8,7 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <std_msgs/msg/float32.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
+#include <nav_msgs/msg/path.hpp>
 #include <vector>
 
 
@@ -60,6 +61,21 @@ signals:
      */
     void laserScanReceived(const std::vector<float> &ranges, 
                           float angle_min, float angle_max, float angle_increment);
+    
+    /**
+     * @brief Signal emitted when SLAM path data is received.
+     * @param path_x Vector of X coordinates along the path
+     * @param path_y Vector of Y coordinates along the path
+     */
+    void pathReceived(const std::vector<double> &path_x, const std::vector<double> &path_y);
+    
+    /**
+     * @brief Signal emitted when robot position is updated (from cmd_vel integration or odometry).
+     * @param x Robot X position in meters
+     * @param y Robot Y position in meters
+     * @param theta Robot orientation angle in radians
+     */
+    void robotPoseReceived(double x, double y, double theta);
 
 public:
     /**
@@ -85,6 +101,19 @@ private:
      * @param msg The LaserScan message containing distance measurements
      */
     void laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
+    
+    /**
+     * @brief Callback function for SLAM path subscription.
+     * Extracts path poses and emits pathReceived signal for visualization.
+     * @param msg The Path message containing a series of poses
+     */
+    void pathCallback(const nav_msgs::msg::Path::SharedPtr msg);
+    
+    /// Robot pose tracking for movement visualization
+    double robot_x_ = 0.0;      ///< Robot X position (meters)
+    double robot_y_ = 0.0;      ///< Robot Y position (meters)
+    double robot_theta_ = 0.0;  ///< Robot orientation angle (radians)
+    double last_update_time_ = 0.0;  ///< Last time pose was updated (seconds)
 
     /**
      * @brief ROS 2 subscription for the test topic. This subscription listens for messages on the "test_topic" 
@@ -99,6 +128,7 @@ private:
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;
     rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr rpy_sub_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
+    rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 };
 

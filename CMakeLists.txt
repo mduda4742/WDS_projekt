@@ -19,6 +19,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 # Add source files
 set(SOURCES
@@ -47,6 +48,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     std_msgs::std_msgs__rosidl_typesupport_cpp
     geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
     sensor_msgs::sensor_msgs__rosidl_typesupport_cpp
+    nav_msgs::nav_msgs__rosidl_typesupport_cpp
 )
 
 # Add include folder to header search paths

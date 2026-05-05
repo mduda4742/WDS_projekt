@@ -47,6 +47,14 @@ public slots:
      */
     void updateLaserScan(const std::vector<float> &ranges, 
                          float angle_min, float angle_max, float angle_increment);
+    
+    /**
+     * @brief Update the widget with SLAM path data and trigger repaint.
+     * Stores the robot's traveled path for visualization.
+     * @param path_x Vector of X coordinates along the path
+     * @param path_y Vector of Y coordinates along the path
+     */
+    void updatePath(const std::vector<double> &path_x, const std::vector<double> &path_y);
 
 private:
     std::vector<float> ranges_;      ///< LIDAR distance measurements
@@ -55,11 +63,21 @@ private:
     float angle_increment_;           ///< Angular resolution of scan
     bool hasData_;                    ///< Flag indicating valid data is available
     
+    std::vector<double> path_x_;      ///< X coordinates of robot path
+    std::vector<double> path_y_;      ///< Y coordinates of robot path
+    bool hasPath_;                    ///< Flag indicating valid path data is available
+    
     /**
      * @brief Convert polar LIDAR coordinates to Cartesian and draw points and connections.
      * @param painter Qt painter object for drawing
      */
     void drawLaserScan(QPainter &painter);
+    
+    /**
+     * @brief Draw the SLAM path on the map.
+     * @param painter Qt painter object for drawing
+     */
+    void drawPath(QPainter &painter);
 };
 
 /**
@@ -98,6 +116,14 @@ public slots:
      */
     void updateLaserData(const std::vector<float> &ranges, 
                         float angle_min, float angle_max, float angle_increment);
+    
+    /**
+     * @brief Receive and display SLAM path data on the map widget.
+     * Forwards path data to MapWidget for visualization.
+     * @param path_x Vector of X coordinates along the path
+     * @param path_y Vector of Y coordinates along the path
+     */
+    void updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y);
 
 private slots:
     void handleMoveForward();        ///< Send forward velocity command

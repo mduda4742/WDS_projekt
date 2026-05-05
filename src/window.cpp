@@ -53,6 +53,11 @@ void Window::updateYawData(double yaw) {
     imuPage->updateYaw(yaw);
 }
 
+void Window::updateRobotPose(double x, double y, double theta) {
+    (void)theta; // theta is unused, yaw is updated from a separate signal
+    imuPage->updatePosition(x, y);
+}
+
 /**
  * @brief Forward LIDAR scan data to SLAM page for visualization.
  * 
@@ -64,6 +69,16 @@ void Window::updateYawData(double yaw) {
 void Window::updateLaserData(const std::vector<float> &ranges, 
                             float angle_min, float angle_max, float angle_increment) {
     slamPage->updateLaserData(ranges, angle_min, angle_max, angle_increment);
+}
+
+/**
+ * @brief Forward SLAM path data to SLAM page for visualization.
+ * 
+ * @param path_x Vector of X coordinates along the path
+ * @param path_y Vector of Y coordinates along the path
+ */
+void Window::updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y) {
+    slamPage->updatePathData(path_x, path_y);
 }
 
 /// @brief Set ROS node pointer so pages can publish movement commands

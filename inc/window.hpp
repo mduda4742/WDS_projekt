@@ -43,6 +43,8 @@ public slots:
 
     void updateBatteryData(double voltage);
 
+    void updateRobotPose(double x, double y, double theta);
+
     /**
      * @brief Forward LIDAR scan data to the SLAM page for visualization.
      * Routes to the map widget for 2D point cloud rendering.
@@ -53,6 +55,14 @@ public slots:
      */
     void updateLaserData(const std::vector<float> &ranges, 
                         float angle_min, float angle_max, float angle_increment);
+    
+    /**
+     * @brief Forward SLAM path data to the SLAM page for visualization.
+     * Routes to the map widget for path rendering.
+     * @param path_x Vector of X coordinates along the path
+     * @param path_y Vector of Y coordinates along the path
+     */
+    void updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y);
 
 private:
     /**

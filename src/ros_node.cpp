@@ -87,7 +87,6 @@ void RosNode::laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
  * @param msg The Path message containing a series of poses
  */
 void RosNode::pathCallback(const nav_msgs::msg::Path::SharedPtr msg) {
-    // Extract X and Y coordinates from path poses
     std::vector<double> path_x;
     std::vector<double> path_y;
     
@@ -96,8 +95,20 @@ void RosNode::pathCallback(const nav_msgs::msg::Path::SharedPtr msg) {
         path_y.push_back(pose_stamped.pose.position.y);
     }
     
-    // Emit signal with path data
     emit pathReceived(path_x, path_y);
+
+    // If path is not empty, extract the last pose as the robot's current pose
+    if (!msg->poses.empty()) {
+        const auto& last_pose = msg->poses.back().pose;
+        robot_x_ = last_pose.position.x;
+        robot_y_ = last_pose.position.y;
+        
+        // Convert quaternion to yaw for orientation
+        auto q = last_pose.orientation;
+        robot_theta_ = std::atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z));
+
+        emit robotPoseReceived(robot_x_, robot_y_, robot_theta_);
+    }
 }
 
 /**
@@ -117,24 +128,5 @@ void RosNode::publishVelocity(double linear_x, double linear_y, double angular_z
     twist_msg.angular.y = 0.0;       // No pitch rotation
     twist_msg.angular.z = angular_z; // Yaw (rotation)
     
-    // Update robot pose based on velocity commands
-    double current_time = this->now().seconds();
-    double dt = current_time - last_update_time_;
-
-    // Simple integration of velocities to update pose
-    // Velocity is in robot's frame, transform to world frame
-    double dx = (linear_x * std::cos(robot_theta_) - linear_y * std::sin(robot_theta_)) * dt;
-    double dy = (linear_x * std::sin(robot_theta_) + linear_y * std::cos(robot_theta_)) * dt;
-    
-    robot_x_ += dx;
-    robot_y_ += dy;
-    robot_theta_ += angular_z * dt; // Update orientation
-
-    last_update_time_ = current_time;
-
-    // Emit signal with updated pose
-    emit robotPoseReceived(robot_x_, robot_y_, robot_theta_);
-
-    // Publish to cmd_vel topic
     cmd_vel_pub_->publish(twist_msg);
 }

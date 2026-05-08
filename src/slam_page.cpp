@@ -10,7 +10,7 @@
  * @brief MapWidget constructor. Initializes the widget with black background for LIDAR visualization.
  * @param parent Parent widget
  */
-MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false), hasPath_(false) {
+MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false), hasPath_(false), robot_x_(0.0), robot_y_(0.0), robot_theta_(0.0) {
     setStyleSheet("background-color: black;");
     setMinimumSize(400, 400);
 }
@@ -36,13 +36,6 @@ void MapWidget::paintEvent(QPaintEvent *event) {
         painter.drawLine(0, y, width(), y);
     }
     
-    // Draw robot position marker at center (green circle)
-    painter.setPen(QPen(Qt::green, 4));
-    int centerX = width() / 2;
-    int centerY = height() / 2;
-    painter.drawPoint(centerX, centerY);
-    painter.drawEllipse(centerX - 10, centerY - 10, 20, 20);
-    
     // Draw SLAM path if valid data is available
     if (hasPath_) {
         drawPath(painter);
@@ -52,6 +45,20 @@ void MapWidget::paintEvent(QPaintEvent *event) {
     if (hasData_) {
         drawLaserScan(painter);
     }
+
+    // Draw robot position marker at center (oriented triangle)
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+    painter.save();
+    painter.translate(centerX, centerY);
+    painter.rotate(-robot_theta_ * 180.0 / M_PI); // Negative for clockwise rotation in Qt
+    painter.setPen(QPen(Qt::green, 2));
+    painter.setBrush(Qt::green);
+    QPointF points[3] = {
+        QPointF(15, 0), QPointF(-7, -7), QPointF(-7, 7)
+    };
+    painter.drawPolygon(points, 3);
+    painter.restore();
 }
 
 /**
@@ -63,69 +70,48 @@ void MapWidget::paintEvent(QPaintEvent *event) {
  * @param painter Qt painter object for drawing
  */
 void MapWidget::drawLaserScan(QPainter &painter) {
-    // Draw connecting lines between consecutive LIDAR measurements
-    painter.setPen(QPen(Qt::red, 2));
-    
-    float maxRange = 25.0f; // Maximum visible range in meters (increased from 10.0f)
+    float maxRange = 10.0f; // Maximum visible range in meters
     float scale = std::min(width(), height()) / (2.0f * maxRange);
-    
     int centerX = width() / 2;
     int centerY = height() / 2;
-    
+
+    QPen linePen(Qt::red, 2);
+    QPen pointPen(Qt::cyan, 3);
+
     QPoint prevPoint(centerX, centerY);
     bool firstPoint = true;
     
+    // First pass: draw lines
+    painter.setPen(linePen);
     for (size_t i = 0; i < ranges_.size(); ++i) {
         float range = ranges_[i];
-        
-        // Skip invalid readings (infinity or NaN)
         if (!std::isfinite(range) || range <= 0.0f) {
             firstPoint = true;
             continue;
         }
-        
-        // Calculate angle for this reading
-        float angle = angle_min_ + i * angle_increment_;
-        
-        // Convert to Cartesian coordinates (with y-axis pointing up in map)
+        float angle = angle_min_ + i * angle_increment_ + robot_theta_;
         float x = range * std::cos(angle);
         float y = range * std::sin(angle);
-        
-        // Scale and convert to screen coordinates
         int screenX = centerX + static_cast<int>(x * scale);
-        int screenY = centerY - static_cast<int>(y * scale);  // Invert Y for screen coords
-        
+        int screenY = centerY - static_cast<int>(y * scale);
         QPoint currentPoint(screenX, screenY);
-        
         if (!firstPoint) {
             painter.drawLine(prevPoint, currentPoint);
         }
-        
         prevPoint = currentPoint;
         firstPoint = false;
     }
     
-    // Draw cyan points for each individual LIDAR measurement
-    painter.setPen(QPen(Qt::cyan, 3));
+    // Second pass: draw points on top
+    painter.setPen(pointPen);
     for (size_t i = 0; i < ranges_.size(); ++i) {
         float range = ranges_[i];
-        
-        // Skip invalid measurements (infinity or NaN or zero)
-        if (!std::isfinite(range) || range <= 0.0f) {
-            continue;
-        }
-        
-        // Calculate angle for this measurement
-        float angle = angle_min_ + i * angle_increment_;
-        
-        // Convert polar (angle, range) to Cartesian (x, y)
+        if (!std::isfinite(range) || range <= 0.0f) continue;
+        float angle = angle_min_ + i * angle_increment_ + robot_theta_;
         float x = range * std::cos(angle);
         float y = range * std::sin(angle);
-        
-        // Scale and translate to screen coordinates
         int screenX = centerX + static_cast<int>(x * scale);
         int screenY = centerY - static_cast<int>(y * scale);
-        
         painter.drawPoint(screenX, screenY);
     }
 }
@@ -142,33 +128,19 @@ void MapWidget::drawPath(QPainter &painter) {
         return;  // No valid path data
     }
     
-    // Draw path line in yellow
     painter.setPen(QPen(Qt::yellow, 2));
-    
     float maxRange = 10.0f;  // Same scale as LIDAR visualization
     float scale = std::min(width(), height()) / (2.0f * maxRange);
-    
     int centerX = width() / 2;
     int centerY = height() / 2;
-    
-    // Draw path as connected line segments
+
     for (size_t i = 0; i < path_x_.size() - 1; ++i) {
-        // Convert world coordinates to screen coordinates
-        int x1 = centerX + static_cast<int>(path_x_[i] * scale);
-        int y1 = centerY - static_cast<int>(path_y_[i] * scale);
-        
-        int x2 = centerX + static_cast<int>(path_x_[i + 1] * scale);
-        int y2 = centerY - static_cast<int>(path_y_[i + 1] * scale);
-        
+        // Convert world coordinates to screen coordinates relative to robot pose
+        int x1 = centerX + static_cast<int>((path_x_[i] - robot_x_) * scale);
+        int y1 = centerY - static_cast<int>((path_y_[i] - robot_y_) * scale);
+        int x2 = centerX + static_cast<int>((path_x_[i + 1] - robot_x_) * scale);
+        int y2 = centerY - static_cast<int>((path_y_[i + 1] - robot_y_) * scale);
         painter.drawLine(x1, y1, x2, y2);
-    }
-    
-    // Draw path points as small white dots
-    painter.setPen(QPen(Qt::white, 2));
-    for (size_t i = 0; i < path_x_.size(); ++i) {
-        int x = centerX + static_cast<int>(path_x_[i] * scale);
-        int y = centerY - static_cast<int>(path_y_[i] * scale);
-        painter.drawPoint(x, y);
     }
 }
 
@@ -201,6 +173,13 @@ void MapWidget::updatePath(const std::vector<double> &path_x, const std::vector<
     path_y_ = path_y;
     hasPath_ = true;
     update();  // Queue repaint event
+}
+
+void MapWidget::updateRobotPose(double x, double y, double theta) {
+    robot_x_ = x;
+    robot_y_ = y;
+    robot_theta_ = theta;
+    update(); // Repaint with new pose
 }
 
 // SlamPage Implementation
@@ -370,6 +349,10 @@ void SlamPage::updateLaserData(const std::vector<float> &ranges,
  */
 void SlamPage::updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y) {
     mapWidget->updatePath(path_x, path_y);
+}
+
+void SlamPage::updateRobotPose(double x, double y, double theta) {
+    mapWidget->updateRobotPose(x, y, theta);
 }
 
 /// @brief Send forward velocity command to robot

@@ -55,6 +55,14 @@ public slots:
      * @param path_y Vector of Y coordinates along the path
      */
     void updatePath(const std::vector<double> &path_x, const std::vector<double> &path_y);
+    
+    /**
+     * @brief Update the robot's pose on the map.
+     * @param x Robot's X coordinate in the map frame
+     * @param y Robot's Y coordinate in the map frame
+     * @param theta Robot's orientation (yaw) in the map frame
+     */
+    void updateRobotPose(double x, double y, double theta);
 
 private:
     std::vector<float> ranges_;      ///< LIDAR distance measurements
@@ -66,6 +74,10 @@ private:
     std::vector<double> path_x_;      ///< X coordinates of robot path
     std::vector<double> path_y_;      ///< Y coordinates of robot path
     bool hasPath_;                    ///< Flag indicating valid path data is available
+    
+    double robot_x_;                  ///< Robot X position in map frame
+    double robot_y_;                  ///< Robot Y position in map frame
+    double robot_theta_;              ///< Robot orientation (yaw) in map frame
     
     /**
      * @brief Convert polar LIDAR coordinates to Cartesian and draw points and connections.
@@ -124,6 +136,14 @@ public slots:
      * @param path_y Vector of Y coordinates along the path
      */
     void updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y);
+    
+    /**
+     * @brief Receive and forward robot pose data to the map widget.
+     * @param x Robot's X coordinate
+     * @param y Robot's Y coordinate
+     * @param theta Robot's orientation (yaw)
+     */
+    void updateRobotPose(double x, double y, double theta);
 
 private slots:
     void handleMoveForward();        ///< Send forward velocity command

@@ -54,8 +54,8 @@ void Window::updateYawData(double yaw) {
 }
 
 void Window::updateRobotPose(double x, double y, double theta) {
-    (void)theta; // theta is unused, yaw is updated from a separate signal
     imuPage->updatePosition(x, y);
+    slamPage->updateRobotPose(x, y, theta);
 }
 
 /**

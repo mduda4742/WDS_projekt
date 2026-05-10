@@ -20,6 +20,11 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
         std::bind(&RosNode::yawCallback, this, _1)
     );
 
+    image_sub_ = this->create_subscription<sensor_msgs::msg::CompressedImage>(
+        "camera/image_color/compressed",
+        10,
+        std::bind(&RosNode::imageCallback, this, _1)
+    );
 
     voltage_sub_ = this->create_subscription<std_msgs::msg::Float32>(
         "firmware/battery_averaged",
@@ -49,6 +54,17 @@ void RosNode::yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr ms
     emit yawReceived(yaw);
 }
 
+void RosNode::imageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr msg) {
+    QImage image;
+    
+    if (image.loadFromData(msg->data.data(), static_cast<int>(msg->data.size()))) {
+        emit imageReceived(image);
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "Nie udało się zdekodować obrazu!");
+    }
+}
+
+
 void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
     double voltage = msg->data;
 
@@ -59,7 +75,6 @@ void RosNode::rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr ms
     // Extract yaw angle from the message and emit signal
     double yaw = msg->vector.z;
     emit rpyReceived(yaw);
-
 }
 
 /**
@@ -79,11 +94,11 @@ void RosNode::laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
  * @param linear_y Strafe (left/right) velocity in m/s (positive = left)
  * @param angular_z Rotation velocity in rad/s (positive = counter-clockwise)
  */
-void RosNode::publishVelocity(double linear_x, double linear_y, double angular_z) {
+void RosNode::publishVelocity(double linear_x, double angular_z) {
     // Create Twist message with provided velocities
     auto twist_msg = geometry_msgs::msg::Twist();
     twist_msg.linear.x = linear_x;   // Forward/backward
-    twist_msg.linear.y = linear_y;   // Left/right strafe
+    twist_msg.linear.y = 0.0;   // Left/right strafe
     twist_msg.linear.z = 0.0;        // No vertical movement
     twist_msg.angular.x = 0.0;       // No roll rotation
     twist_msg.angular.y = 0.0;       // No pitch rotation

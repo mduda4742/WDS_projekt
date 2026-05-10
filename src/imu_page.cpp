@@ -1,4 +1,6 @@
 #include "imu_page.hpp"
+#include "battery_widget.hpp"
+#include "control_pad_widget.hpp"
 #include <cmath>
 
 /**
@@ -35,6 +37,8 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *title = new QLabel("LEO SYSTEM", this);
     title->setStyleSheet("font-size: 18px; font-weight: bold; color: #444;");
 
+    batteryIcon = new BatteryWidget(this);
+
     batteryLabel = new QLabel("12.4 V", this);
     batteryLabel->setFixedSize(65, 25);
     batteryLabel->setStyleSheet("background: #222; color: #00FF00; border-radius: 3px; font-family: Monospace;");
@@ -42,7 +46,9 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     topBar->addWidget(title);
     topBar->addStretch();
+    topBar->addWidget(batteryIcon);
     topBar->addWidget(batteryLabel);
+
     rightLayout->addLayout(topBar);
 
     rightLayout->addSpacing(20);
@@ -73,6 +79,9 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     rightLayout->addStretch();
 
+    controlPad = new ControlPadWidget(this);
+    rightLayout->addWidget(controlPad, 0, Qt::AlignRight | Qt::AlignBottom);
+
     mainHLayout->addLayout(rightLayout, 1);
 }
 
@@ -84,6 +93,21 @@ void ImuPage::updateYaw(double yaw) {
 
 void ImuPage::updateVoltage(double voltage) {
     batteryLabel->setText(QString("%1 V").arg(voltage, 0, 'f', 1));
+
+    float minVolt = 9.0;
+    float maxVolt = 12.6;
+
+    double level = (voltage - minVolt) / (maxVolt - minVolt);
+
+    level = qBound(0.0, level, 1.0);
+
+    batteryIcon->setLevel(level);
+
+    if (level <= 0.2) {
+        batteryLabel->setStyleSheet("color: #FF0000; font-family: Monospace; font-weight: bold;");
+    } else {
+        batteryLabel->setStyleSheet("color: #00FF00; font-family: Monospace; font-weight: bold;");
+    }
 }
 
 /*
@@ -97,5 +121,14 @@ void ImuPage::updateAccelData(const QString &msg) {
  */
 void ImuPage::updateGyroData(const QString &msg) {
     gyroLabel->setText("Gyro: " + msg);
+}
+
+void ImuPage::setRosNode(RosNode *node) {
+    ros_node_ = node;
+
+    if (ros_node_ && controlPad) {
+        connect(controlPad, &ControlPadWidget::velocityRequested, 
+                ros_node_, &RosNode::publishVelocity);
+    }
 }
 

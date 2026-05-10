@@ -69,4 +69,5 @@ void Window::updateLaserData(const std::vector<float> &ranges,
 /// @brief Set ROS node pointer so pages can publish movement commands
 void Window::setRosNode(RosNode *node) {
     slamPage->setRosNode(node);
+    imuPage->setRosNode(node);
 }

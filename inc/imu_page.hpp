@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QLabel>
 #include <QVBoxLayout>
+#include "battery_widget.hpp"
+#include "control_pad_widget.hpp"
+#include "ros_node.hpp"
 
 /**
  * @class ImuPage
@@ -26,6 +29,8 @@ public:
      */
     virtual ~ImuPage() = default;
 
+    void setRosNode(RosNode *node);
+
 public slots:
 
     /*
@@ -46,7 +51,12 @@ private:
 
     QLabel *cameraLabel;
     QLabel *batteryLabel;
+
+    BatteryWidget *batteryIcon;
+    ControlPadWidget *controlPad;
     
+    RosNode *ros_node_ = nullptr;
+
     QLabel *xLabel;
     QLabel *yLabel;
     QLabel *yawLabel;

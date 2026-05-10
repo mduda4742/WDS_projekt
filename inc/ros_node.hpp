@@ -7,8 +7,12 @@
 #include <geometry_msgs/msg/vector3_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <std_msgs/msg/float32.hpp>
+
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <vector>
+
+#include <sensor_msgs/msg/compressed_image.hpp>
+#include <QImage>
 
 
 /**
@@ -50,6 +54,8 @@ signals:
 
     void batteryReceived(double voltage);
     void rpyReceived(double yaw);
+
+    void imageReceived(const QImage &image);
     
     /**
      * @brief Signal emitted when LIDAR scan data is received.
@@ -94,6 +100,9 @@ private:
 
     void yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg);
     rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr yaw_sub_;
+
+    void imageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr msg);
+    rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr image_sub_;
 
     void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;

@@ -28,14 +28,17 @@ set(SOURCES
     src/imu_page.cpp
     src/ros_node.cpp
     src/lidar_sim_node.cpp  
+    src/battery_widget.cpp
+    src/control_pad_widget.cpp
     inc/window.hpp
     inc/slam_page.hpp
     inc/imu_page.hpp
     inc/ros_node.hpp
     inc/lidar_sim_node.hpp  
+    inc/battery_widget.hpp
+    inc/control_pad_widget.hpp
 )
 
-# Create executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Link Qt and ROS libraries

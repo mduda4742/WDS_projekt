@@ -20,6 +20,8 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 # Add source files
 set(SOURCES
@@ -53,3 +55,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 # Add include folder to header search paths
 target_include_directories(${PROJECT_NAME} PRIVATE inc)
+
+# Create test executable for path and pose visualization testing
+add_executable(test_path_pub src/test_path_publisher.cpp)
+
+target_link_libraries(test_path_pub PRIVATE 
+    rclcpp::rclcpp
+    nav_msgs::nav_msgs__rosidl_typesupport_cpp
+    geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
+    tf2::tf2
+    tf2_geometry_msgs::tf2_geometry_msgs
+)
+
+target_include_directories(test_path_pub PRIVATE inc)

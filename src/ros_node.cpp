@@ -34,14 +34,14 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
         std::bind(&RosNode::laserScanCallback, this, _1)
     );
 
-    // Subscribe to SLAM path data
+    
     path_sub_ = this->create_subscription<nav_msgs::msg::Path>(
         "/path",
         10,
         std::bind(&RosNode::pathCallback, this, _1)
     );
 
-    // Create publisher for robot velocity commands
+    
     cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
         "cmd_vel",
         10
@@ -57,6 +57,8 @@ void RosNode::yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr ms
     double yaw = msg->vector.z;
     robot_theta_ = yaw;
     emit yawReceived(yaw);
+    // Emit the full robot pose to ensure the visualization on the SLAM page is also updated
+    emit robotPoseReceived(robot_x_, robot_y_, robot_theta_);
 }
 
 void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {

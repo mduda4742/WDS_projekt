@@ -30,12 +30,10 @@ set(SOURCES
     src/slam_page.cpp
     src/imu_page.cpp
     src/ros_node.cpp
-    src/lidar_sim_node.cpp  
     inc/window.hpp
     inc/slam_page.hpp
     inc/imu_page.hpp
     inc/ros_node.hpp
-    inc/lidar_sim_node.hpp  
 )
 
 # Create executable
@@ -55,16 +53,3 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 # Add include folder to header search paths
 target_include_directories(${PROJECT_NAME} PRIVATE inc)
-
-# Create test executable for path and pose visualization testing
-add_executable(test_path_pub src/test_path_publisher.cpp)
-
-target_link_libraries(test_path_pub PRIVATE 
-    rclcpp::rclcpp
-    nav_msgs::nav_msgs__rosidl_typesupport_cpp
-    geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
-    tf2::tf2
-    tf2_geometry_msgs::tf2_geometry_msgs
-)
-
-target_include_directories(test_path_pub PRIVATE inc)

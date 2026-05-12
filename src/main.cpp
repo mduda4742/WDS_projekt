@@ -1,7 +1,6 @@
 #include <QApplication>
 #include "window.hpp"
 #include "ros_node.hpp"
-#include "lidar_sim_node.hpp"
 #include <thread>
 
 int main(int argc, char *argv[]) {
@@ -39,12 +38,6 @@ int main(int argc, char *argv[]) {
         rclcpp::spin(ros_node);
     });
     ros_thread.detach();  // Detach thread so it runs independently
-
-    std::thread lidar_thread([]() {
-        auto lidar_simulator = std::make_shared<LidarSimulator>();
-        rclcpp::spin(lidar_simulator);
-    });
-    lidar_thread.detach();  
 
     // Show the GUI
     window.show();

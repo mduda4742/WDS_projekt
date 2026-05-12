@@ -67,13 +67,6 @@ void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
     emit batteryReceived(voltage);
 }
 
-void RosNode::rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
-    // Extract yaw angle from the message and emit signal
-    double yaw = msg->vector.z;
-    emit rpyReceived(yaw);
-
-}
-
 /**
  * @brief Callback for LIDAR scan data. Extracts ranges and emits signal.
  * @param msg The LaserScan message containing distance measurements

@@ -19,11 +19,6 @@ int main(int argc, char *argv[]) {
     window.setRosNode(ros_node.get());
 
     // Connect ROS node signals to GUI slots
-    QObject::connect(ros_node.get(), &RosNode::rpyReceived, 
-                     &window, [&window](double yaw) {
-                         // Can handle yaw data here if needed
-                     });
-    
     QObject::connect(ros_node.get(), &RosNode::laserScanReceived,
                      &window, &Window::updateLaserData);
 

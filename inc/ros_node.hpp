@@ -50,8 +50,6 @@ signals:
     void yawReceived(double yaw);
 
     void batteryReceived(double voltage);
-    void rpyReceived(double yaw);
-    
     /**
      * @brief Signal emitted when LIDAR scan data is received.
      * @param ranges Vector of distance measurements in meters
@@ -89,13 +87,6 @@ public:
 
 private:
     /**
-     * @brief Callback function for /imu/rpy subscription.
-     * Extracts yaw angle and emits rpyReceived signal.
-     * @param msg The Vector3Stamped message containing roll, pitch, yaw
-     */
-    void rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg);
-    
-    /**
      * @brief Callback function for /scan subscription.
      * Extracts laser scan data and emits laserScanReceived signal for visualization.
      * @param msg The LaserScan message containing distance measurements
@@ -126,7 +117,6 @@ private:
 
     void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;
-    rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr rpy_sub_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;

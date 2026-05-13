@@ -9,8 +9,18 @@
 #include <std_msgs/msg/float32.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <nav_msgs/msg/path.hpp>
+#include <QImage>
 #include <vector>
 
+// ROS 2 message types
+#include <std_msgs/msg/float32.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <sensor_msgs/msg/compressed_image.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <geometry_msgs/msg/twist.hpp>
+#include <sensor_msgs/msg/image.hpp>
+
+#include "odomState.hpp"
 
 /**
  * @class RosNode
@@ -25,6 +35,8 @@
  * Publications:
  * - /cmd_vel: Robot velocity commands as Twist messages
  */
+
+
 class RosNode : public QObject, public rclcpp::Node {
     Q_OBJECT
 public:
@@ -40,16 +52,21 @@ public:
     virtual ~RosNode() = default;
     
 signals:
-   /**
-    * @brief Signal emitted when new data is received from the ROS topic. The message content 
-    * is passed as a QString to be easily used in the Qt GUI.
-    * @param msg The message content received from the ROS topic, converted to QString format.
+
+    /**
+    * @brief Signal emitted when new odometry data is processed.
+    * @param odom The processed state containing x, y, yaw, and velocities.
     */
-    void testDataReceived(const QString &msg); // testing
+    void odomReceived(odomState odom);
 
-    void yawReceived(double yaw);
-
+    /**
+    * @brief Signal emitted when a new battery voltage reading is received.
+    * @param voltage The battery voltage in Volts [V].
+    */
     void batteryReceived(double voltage);
+
+    void imageReceived(const QImage &image);
+    
     /**
      * @brief Signal emitted when LIDAR scan data is received.
      * @param ranges Vector of distance measurements in meters
@@ -80,12 +97,25 @@ public:
      * @brief Publish velocity command to cmd_vel topic for robot movement control.
      * Creates and publishes a Twist message with linear and angular velocities.
      * @param linear_x Forward/backward velocity in m/s (positive = forward)
-     * @param linear_y Strafe (left/right) velocity in m/s (positive = left)
      * @param angular_z Rotation velocity in rad/s (positive = counter-clockwise)
      */
-    void publishVelocity(double linear_x, double linear_y, double angular_z);
+    void publishVelocity(double linear_x, double angular_z);
 
 private:
+    /**
+     * @brief Callback for the odometry subscription.
+     * @param msg Shared pointer to the incoming nav_msgs/Odometry message.
+     */
+    void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
+
+    /**
+     * @brief Callback for the battery voltage subscription.
+     * @param msg Shared pointer to the incoming std_msgs/Float32 message.
+     */
+    void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
+
+    void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg);
+
     /**
      * @brief Callback function for /scan subscription.
      * Extracts laser scan data and emits laserScanReceived signal for visualization.
@@ -106,19 +136,13 @@ private:
     double robot_theta_ = 0.0;  ///< Robot orientation angle (radians)
     double last_update_time_ = 0.0;  ///< Last time pose was updated (seconds)
 
-    /**
-     * @brief ROS 2 subscription for the test topic. This subscription listens for messages on the "test_topic" 
-     * and triggers the testCallback function when new messages arrive. This is used for testing the integration between ROS and Qt.
-     */
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr test_sub_; // testing
-
-    void yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg);
-    rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr yaw_sub_;
-
-    void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
-    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr voltage_sub_;
+    // ROS 2 Subscriptions
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr battery_sub_;
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
+
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 };
 

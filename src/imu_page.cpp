@@ -1,4 +1,6 @@
 #include "imu_page.hpp"
+#include "battery_widget.hpp"
+#include "control_pad_widget.hpp"
 #include <cmath>
 
 /**
@@ -35,6 +37,8 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *title = new QLabel("LEO SYSTEM", this);
     title->setStyleSheet("font-size: 18px; font-weight: bold; color: #444;");
 
+    batteryIcon = new BatteryWidget(this);
+
     batteryLabel = new QLabel("12.4 V", this);
     batteryLabel->setFixedSize(65, 25);
     batteryLabel->setStyleSheet("background: #222; color: #00FF00; border-radius: 3px; font-family: Monospace;");
@@ -42,7 +46,9 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     topBar->addWidget(title);
     topBar->addStretch();
+    topBar->addWidget(batteryIcon);
     topBar->addWidget(batteryLabel);
+
     rightLayout->addLayout(topBar);
 
     rightLayout->addSpacing(20);
@@ -73,33 +79,60 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     rightLayout->addStretch();
 
+    controlPad = new ControlPadWidget(this);
+    rightLayout->addWidget(controlPad, 0, Qt::AlignRight | Qt::AlignBottom);
+
     mainHLayout->addLayout(rightLayout, 1);
 }
 
-void ImuPage::updateYaw(double yaw) {
-    double yaw_deg = yaw * (180.0 / M_PI);
+void ImuPage::updateOdom(odomState state) {
+    double yaw_deg = state.yaw * (180.0 / M_PI);
+    double angular_vel_deg = state.angular_vel * (180.0 / M_PI);
 
+    xLabel->setText(QString("X:  %1 m").arg(state.x, 0, 'f', 1));
+    yLabel->setText(QString("Y:  %1 m").arg(state.y, 0, 'f', 1));
     yawLabel->setText(QString("YAW:  %1 °").arg(yaw_deg, 0, 'f', 1));
+
+    linearVelLabel->setText(QString("LIN:  %1 m/s").arg(state.linear_vel, 0, 'f', 1));
+    angularVelLabel->setText(QString("ANG:  %1 °/s").arg(angular_vel_deg, 0, 'f', 1));
 }
 
-void ImuPage::updateVoltage(double voltage) {
+void ImuPage::updateBattery(double voltage) {
     batteryLabel->setText(QString("%1 V").arg(voltage, 0, 'f', 1));
+
+    float minVolt = 9.0;
+    float maxVolt = 12.6;
+
+    double level = (voltage - minVolt) / (maxVolt - minVolt);
+
+    level = qBound(0.0, level, 1.0);
+
+    batteryIcon->setLevel(level);
+
+    if (level <= 0.2) {
+        batteryLabel->setStyleSheet("color: #FF0000; font-family: Monospace; font-weight: bold;");
+    } else {
+        batteryLabel->setStyleSheet("color: #00FF00; font-family: Monospace; font-weight: bold;");
+    }
 }
 
-void ImuPage::updatePosition(double x, double y) {
-    xLabel->setText(QString("X:  %1 m").arg(x, 0, 'f', 2));
-    yLabel->setText(QString("Y:  %1 m").arg(y, 0, 'f', 2));
+void ImuPage::updateCameraImage(const QImage &image) {
+    if (!image.isNull()) {
+        cameraLabel->setPixmap(
+            QPixmap::fromImage(image).scaled(
+                cameraLabel->size(),
+                Qt::KeepAspectRatio, 
+                Qt::SmoothTransformation 
+            )
+        );
+    }
 }
 
-/*
-void ImuPage::updateAccelData(const QString &msg) {
-    accelLabel->setText("Accel: " + msg);
-}
+void ImuPage::setRosNode(RosNode *node) {
+    ros_node_ = node;
 
-/**
- * @brief Update gyroscope data display with new value.
- * @param msg Formatted gyroscope information string
- */
-void ImuPage::updateGyroData(const QString &msg) {
-    gyroLabel->setText("Gyro: " + msg);
+    if (ros_node_ && controlPad) {
+        connect(controlPad, &ControlPadWidget::velocityRequested, 
+                ros_node_, &RosNode::publishVelocity);
+    }
 }

@@ -45,18 +45,20 @@ QWidget* Window::createHomePage() {
     return page;
 }
 
+void Window::updateOdomData(odomState state) {
+    imuPage->updateOdom(state);
+}
+
 void Window::updateBatteryData(double voltage) {
-    imuPage->updateVoltage(voltage);
+    imuPage->updateBattery(voltage);
 }
 
-void Window::updateYawData(double yaw) {
-    imuPage->updateYaw(yaw);
+void Window::updateCameraImage(const QImage &image) {
+    if (imuPage) {
+        imuPage->updateCameraImage(image);
+    }
 }
 
-void Window::updateRobotPose(double x, double y, double theta) {
-    imuPage->updatePosition(x, y);
-    slamPage->updateRobotPose(x, y, theta);
-}
 
 /**
  * @brief Forward LIDAR scan data to SLAM page for visualization.
@@ -84,4 +86,5 @@ void Window::updatePathData(const std::vector<double> &path_x, const std::vector
 /// @brief Set ROS node pointer so pages can publish movement commands
 void Window::setRosNode(RosNode *node) {
     slamPage->setRosNode(node);
+    imuPage->setRosNode(node);
 }

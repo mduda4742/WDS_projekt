@@ -1,5 +1,9 @@
 #include <ros_node.hpp>
 #include <cmath>
+#include <tf2/utils.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <cv_bridge/cv_bridge.hpp> // Mostek między ROS a OpenCV
+#include <opencv2/opencv.hpp>    // Samo OpenCV
 
 using std::placeholders::_1;
 
@@ -15,18 +19,24 @@ using std::placeholders::_1;
  */
 RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
 
-    yaw_sub_ = this->create_subscription<geometry_msgs::msg::Vector3Stamped>(
-        "imu/rpy",
+    odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+        "merged_odom",
         10,
-        std::bind(&RosNode::yawCallback, this, _1)
+        std::bind(&RosNode::odomCallback, this, _1)
     );
 
-
-    voltage_sub_ = this->create_subscription<std_msgs::msg::Float32>(
+    battery_sub_ = this->create_subscription<std_msgs::msg::Float32>(
         "firmware/battery_averaged",
         rclcpp::SensorDataQoS(),
         std::bind(&RosNode::batteryCallback, this, _1)
-        );
+    );
+
+
+    image_sub_ = this->create_subscription<sensor_msgs::msg::Image>(
+        "camera/image_raw",
+        rclcpp::SensorDataQoS(),
+        std::bind(&RosNode::imageCallback, this, _1)
+    );
 
     laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "/scan",
@@ -52,13 +62,17 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
     RCLCPP_INFO(this->get_logger(), "RosNode has been started and is listening to topics");
 }
 
+void RosNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
+    odomState state;
+    state.x = msg->pose.pose.position.x;
+    state.y = msg->pose.pose.position.y;
 
-void RosNode::yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
-    double yaw = msg->vector.z;
-    robot_theta_ = yaw;
-    emit yawReceived(yaw);
-    // Emit the full robot pose to ensure the visualization on the SLAM page is also updated
-    emit robotPoseReceived(robot_x_, robot_y_, robot_theta_);
+    state.yaw = tf2::getYaw(msg->pose.pose.orientation);
+
+    state.linear_vel = msg->twist.twist.linear.x;
+    state.angular_vel = msg->twist.twist.angular.z;
+
+    emit odomReceived(state);
 }
 
 void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
@@ -67,6 +81,45 @@ void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
     emit batteryReceived(voltage);
 }
 
+void RosNode::imageCallback(const sensor_msgs::msg::Image::SharedPtr msg) {
+    if (msg->data.empty()) {
+        RCLCPP_WARN(this->get_logger(), "Otrzymano pusta klatke z ROSa!");
+        return;
+    }
+
+    RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000, "Otrzymuje klatki wideo! Dziala OpenCV!");
+
+    try {
+        // 1. Używamy cv_bridge, żeby z wiadomości ROS zrobić obiekt OpenCV (cv::Mat).
+        // Wymuszamy format BGR8, z którym OpenCV radzi sobie najlepiej.
+        cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
+        cv::Mat cv_image = cv_ptr->image;
+
+        // 2. OpenCV trzyma kolory jako BGR, ale Qt lubi RGB. 
+        // OpenCV zamieni nam kolory z prędkością światła.
+        cv::Mat rgb_image;
+        cv::cvtColor(cv_image, rgb_image, cv::COLOR_BGR2RGB);
+
+        // 3. Konwertujemy gotowy rgb_image z OpenCV na QImage.
+        // Używamy płytkiej kopii (wskaźnik na dane OpenCV).
+        QImage q_img(
+            rgb_image.data, 
+            rgb_image.cols, 
+            rgb_image.rows, 
+            static_cast<int>(rgb_image.step), 
+            QImage::Format_RGB888
+        );
+
+        // 4. Kopia ratująca życie. 
+        // Wychodzimy z funkcji, więc rgb_image zostanie zniszczone. Musimy skopiować QImage.
+        emit imageReceived(q_img.copy());
+
+    } catch (cv_bridge::Exception& e) {
+        RCLCPP_ERROR(this->get_logger(), "cv_bridge rzucil wyjatkiem: %s", e.what());
+    } catch (const std::exception& e) {
+        RCLCPP_ERROR(this->get_logger(), "Standardowy wyjatek: %s", e.what());
+    }
+}
 /**
  * @brief Callback for LIDAR scan data. Extracts ranges and emits signal.
  * @param msg The LaserScan message containing distance measurements
@@ -113,11 +166,11 @@ void RosNode::pathCallback(const nav_msgs::msg::Path::SharedPtr msg) {
  * @param linear_y Strafe (left/right) velocity in m/s (positive = left)
  * @param angular_z Rotation velocity in rad/s (positive = counter-clockwise)
  */
-void RosNode::publishVelocity(double linear_x, double linear_y, double angular_z) {
+void RosNode::publishVelocity(double linear_x, double angular_z) {
     // Create Twist message with provided velocities
     auto twist_msg = geometry_msgs::msg::Twist();
     twist_msg.linear.x = linear_x;   // Forward/backward
-    twist_msg.linear.y = linear_y;   // Left/right strafe
+    twist_msg.linear.y = 0.0;   // Left/right strafe
     twist_msg.linear.z = 0.0;        // No vertical movement
     twist_msg.angular.x = 0.0;       // No roll rotation
     twist_msg.angular.y = 0.0;       // No pitch rotation

@@ -20,8 +20,13 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+
 find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+
+find_package(OpenCV REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 # Add source files
 set(SOURCES
@@ -29,18 +34,23 @@ set(SOURCES
     src/window.cpp
     src/slam_page.cpp
     src/imu_page.cpp
-    src/ros_node.cpp
+    src/ros_node.cpp 
+    src/battery_widget.cpp
+    src/control_pad_widget.cpp
     inc/window.hpp
     inc/slam_page.hpp
     inc/imu_page.hpp
-    inc/ros_node.hpp
+    inc/ros_node.hpp 
+    inc/battery_widget.hpp
+    inc/control_pad_widget.hpp
+    inc/odomState.hpp
 )
 
-# Create executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Link Qt and ROS libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+
+# Link Qt libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Widgets
     Qt6::Core
     Qt6::Gui
@@ -49,6 +59,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
     sensor_msgs::sensor_msgs__rosidl_typesupport_cpp
     nav_msgs::nav_msgs__rosidl_typesupport_cpp
+    tf2::tf2
+    tf2_ros::tf2_ros
+    tf2_geometry_msgs::tf2_geometry_msgs
+    ${OpenCV_LIBS}
+    cv_bridge::cv_bridge
 )
 
 # Add include folder to header search paths

@@ -3,6 +3,7 @@
 #include "ros_node.hpp"
 #include "lidar_sim_node.hpp"
 #include <thread>
+#include "odomState.hpp"
 
 int main(int argc, char *argv[]) {
     // Initialize ROS 2
@@ -12,6 +13,9 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Create ROS 2 node
+    qRegisterMetaType<odomState>("odomState");
+
+    // Create ROS 2 node as shared_ptr
     auto ros_node = std::make_shared<RosNode>();
     
     // Create main window
@@ -19,16 +23,12 @@ int main(int argc, char *argv[]) {
     window.setRosNode(ros_node.get());
 
     // Connect ROS node signals to GUI slots
-    QObject::connect(ros_node.get(), &RosNode::rpyReceived, 
-                     &window, [&window](double yaw) {
-                         // Can handle yaw data here if needed
-                     });
     
     QObject::connect(ros_node.get(), &RosNode::laserScanReceived,
                      &window, &Window::updateLaserData);
 
-    QObject::connect(ros_node.get(), &RosNode::yawReceived,
-                     &window, &Window::updateYawData);
+    QObject::connect(ros_node.get(), &RosNode::odomReceived,
+                     &window, &Window::updateOdomData);
 
     QObject::connect(ros_node.get(), &RosNode::batteryReceived,
                      &window, &Window::updateBatteryData);

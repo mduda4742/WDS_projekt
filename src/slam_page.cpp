@@ -305,76 +305,76 @@ void SlamPage::updateLaserData(const std::vector<float> &ranges,
 /// @brief Send forward velocity command to robot
 void SlamPage::handleMoveForward() {
     if (ros_node_) {
-        ros_node_->publishVelocity(linear_speed_, 0.0, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send backward velocity command to robot
 void SlamPage::handleMoveBackward() {
     if (ros_node_) {
-        ros_node_->publishVelocity(-linear_speed_, 0.0, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send left strafe velocity command to robot
 void SlamPage::handleMoveLeft() {
     if (ros_node_) {
-        ros_node_->publishVelocity(0.0, linear_speed_, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send right strafe velocity command to robot
 void SlamPage::handleMoveRight() {
     if (ros_node_) {
-        ros_node_->publishVelocity(0.0, -linear_speed_, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send counter-clockwise rotation command to robot
 void SlamPage::handleTurnLeft() {
     if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0, angular_speed_);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send clockwise rotation command to robot
 void SlamPage::handleTurnRight() {
     if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0, -angular_speed_);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send forward-left diagonal movement command
 void SlamPage::handleMoveForwardLeft() {
     if (ros_node_) {
-        ros_node_->publishVelocity(linear_speed_, linear_speed_, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send forward-right diagonal movement command
 void SlamPage::handleMoveForwardRight() {
     if (ros_node_) {
-        ros_node_->publishVelocity(linear_speed_, -linear_speed_, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send backward-left diagonal movement command
 void SlamPage::handleMoveBackwardLeft() {
     if (ros_node_) {
-        ros_node_->publishVelocity(-linear_speed_, linear_speed_, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send backward-right diagonal movement command
 void SlamPage::handleMoveBackwardRight() {
     if (ros_node_) {
-        ros_node_->publishVelocity(-linear_speed_, -linear_speed_, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }
 
 /// @brief Send zero velocity command to stop the robot
 void SlamPage::handleStop() {
     if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0, 0.0);
+        ros_node_->publishVelocity(0.0, 0.0);
     }
 }

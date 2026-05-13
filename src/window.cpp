@@ -45,13 +45,14 @@ QWidget* Window::createHomePage() {
     return page;
 }
 
-void Window::updateBatteryData(double voltage) {
-    imuPage->updateVoltage(voltage);
+void Window::updateOdomData(odomState state) {
+    imuPage->updateOdom(state);
 }
 
-void Window::updateYawData(double yaw) {
-    imuPage->updateYaw(yaw);
+void Window::updateBatteryData(double voltage) {
+    imuPage->updateBattery(voltage);
 }
+
 
 /**
  * @brief Forward LIDAR scan data to SLAM page for visualization.

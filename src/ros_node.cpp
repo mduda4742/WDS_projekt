@@ -1,4 +1,6 @@
 #include <ros_node.hpp>
+#include <tf2/utils.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 using std::placeholders::_1;
 
@@ -14,23 +16,24 @@ using std::placeholders::_1;
  */
 RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
 
-    yaw_sub_ = this->create_subscription<geometry_msgs::msg::Vector3Stamped>(
-        "imu/rpy",
+    odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+        "merged_odom",
         10,
-        std::bind(&RosNode::yawCallback, this, _1)
+        std::bind(&RosNode::odomCallback, this, _1)
     );
+
+    battery_sub_ = this->create_subscription<std_msgs::msg::Float32>(
+        "firmware/battery_averaged",
+        rclcpp::SensorDataQoS(),
+        std::bind(&RosNode::batteryCallback, this, _1)
+    );
+
 
     image_sub_ = this->create_subscription<sensor_msgs::msg::CompressedImage>(
         "camera/image_color/compressed",
         10,
         std::bind(&RosNode::imageCallback, this, _1)
     );
-
-    voltage_sub_ = this->create_subscription<std_msgs::msg::Float32>(
-        "firmware/battery_averaged",
-        rclcpp::SensorDataQoS(),
-        std::bind(&RosNode::batteryCallback, this, _1)
-        );
 
     laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "/scan",
@@ -47,11 +50,23 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
     RCLCPP_INFO(this->get_logger(), "RosNode has been started and is listening to topics");
 }
 
+void RosNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
+    odomState state;
+    state.x = msg->pose.pose.position.x;
+    state.y = msg->pose.pose.position.y;
 
-void RosNode::yawCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
-    double yaw = msg->vector.z;
+    state.yaw = tf2::getYaw(msg->pose.pose.orientation);
 
-    emit yawReceived(yaw);
+    state.linear_vel = msg->twist.twist.linear.x;
+    state.angular_vel = msg->twist.twist.angular.z;
+
+    emit odomReceived(state);
+}
+
+void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
+    double voltage = msg->data;
+
+    emit batteryReceived(voltage);
 }
 
 void RosNode::imageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr msg) {
@@ -62,19 +77,6 @@ void RosNode::imageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr m
     } else {
         RCLCPP_ERROR(this->get_logger(), "Nie udało się zdekodować obrazu!");
     }
-}
-
-
-void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {
-    double voltage = msg->data;
-
-    emit batteryReceived(voltage);
-}
-
-void RosNode::rpyCallback(const geometry_msgs::msg::Vector3Stamped::SharedPtr msg) {
-    // Extract yaw angle from the message and emit signal
-    double yaw = msg->vector.z;
-    emit rpyReceived(yaw);
 }
 
 /**

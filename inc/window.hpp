@@ -7,6 +7,7 @@
 #include <vector>
 #include "slam_page.hpp"
 #include "imu_page.hpp"
+#include "odomState.hpp"
 
 /**
  * @class Window
@@ -39,8 +40,16 @@ public:
     void setRosNode(class RosNode *node);
 
 public slots:
-    void updateYawData(double yaw);
+    /**
+     * @brief Slot to update the Odometry and Robot State data.
+     * @param state The current pose and velocity state of the robot.
+     */
+    void updateOdomData(odomState state);
 
+    /**
+     * @brief Slot to update the battery voltage display.
+     * @param voltage Current battery voltage in Volts [V].
+     */
     void updateBatteryData(double voltage);
 
     /**

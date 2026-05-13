@@ -85,13 +85,19 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     mainHLayout->addLayout(rightLayout, 1);
 }
 
-void ImuPage::updateYaw(double yaw) {
-    double yaw_deg = yaw * (180.0 / M_PI);
+void ImuPage::updateOdom(odomState state) {
+    double yaw_deg = state.yaw * (180.0 / M_PI);
+    double angular_vel_deg = state.angular_vel * (180.0 / M_PI);
 
+    xLabel->setText(QString("X:  %1 m").arg(state.x, 0, 'f', 1));
+    yLabel->setText(QString("Y:  %1 m").arg(state.y, 0, 'f', 1));
     yawLabel->setText(QString("YAW:  %1 °").arg(yaw_deg, 0, 'f', 1));
+
+    linearVelLabel->setText(QString("LIN:  %1 m/s").arg(state.linear_vel, 0, 'f', 1));
+    angularVelLabel->setText(QString("ANG:  %1 °/s").arg(angular_vel_deg, 0, 'f', 1));
 }
 
-void ImuPage::updateVoltage(double voltage) {
+void ImuPage::updateBattery(double voltage) {
     batteryLabel->setText(QString("%1 V").arg(voltage, 0, 'f', 1));
 
     float minVolt = 9.0;
@@ -108,19 +114,6 @@ void ImuPage::updateVoltage(double voltage) {
     } else {
         batteryLabel->setStyleSheet("color: #00FF00; font-family: Monospace; font-weight: bold;");
     }
-}
-
-/*
-void ImuPage::updateAccelData(const QString &msg) {
-    accelLabel->setText("Accel: " + msg);
-}
-
-/**
- * @brief Update gyroscope data display with new value.
- * @param msg Formatted gyroscope information string
- */
-void ImuPage::updateGyroData(const QString &msg) {
-    gyroLabel->setText("Gyro: " + msg);
 }
 
 void ImuPage::setRosNode(RosNode *node) {

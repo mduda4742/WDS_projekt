@@ -116,6 +116,14 @@ void ImuPage::updateBattery(double voltage) {
     }
 }
 
+void ImuPage::updateCameraImage(const QImage &img) {
+    if (cameraLabel) {
+        cameraLabel->setPixmap(QPixmap::fromImage(img).scaled(
+            cameraLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation
+        ));
+    }
+}
+
 void ImuPage::setRosNode(RosNode *node) {
     ros_node_ = node;
 

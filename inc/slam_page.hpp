@@ -8,6 +8,8 @@
 #include <QPainter>
 #include <vector>
 
+#include "control_pad_widget.hpp"
+
 class RosNode;  // Forward declaration
 
 /**

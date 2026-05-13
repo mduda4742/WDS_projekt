@@ -50,7 +50,7 @@ public slots:
      */
     void updateBattery(double voltage);
 
-    // void updateCameraImage(const QImage &img);
+    void updateCameraImage(const QImage &img);
 
 private:
     QLabel *xLabel;           /**< Label displaying the X-coordinate [m]. */

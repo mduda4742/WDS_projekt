@@ -2,11 +2,9 @@
 #include "battery_widget.hpp"
 #include "control_pad_widget.hpp"
 #include <cmath>
+#include <QVBoxLayout>
+#include "ros_node.hpp"
 
-/**
- * @brief ImuPage constructor. Creates layout with IMU data display labels.
- * @param parent Parent widget
- */
 ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *mainHLayout = new QHBoxLayout(this);
 

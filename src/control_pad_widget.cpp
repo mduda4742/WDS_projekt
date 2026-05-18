@@ -1,5 +1,8 @@
 #include "control_pad_widget.hpp"
 #include <QVariant>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QTimer>
 
 ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
 

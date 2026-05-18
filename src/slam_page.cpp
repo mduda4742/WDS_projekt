@@ -15,10 +15,6 @@ MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false), hasPat
     setMinimumSize(400, 400);
 }
 
-/**
- * @brief Paint event handler. Renders the 2D LIDAR map with grid, robot position, and point cloud.
- * @param event The paint event (unused but required by Qt API)
- */
 void MapWidget::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);

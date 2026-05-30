@@ -2,6 +2,7 @@
 #include "window.hpp"
 #include "ros_node.hpp"
 #include <thread>
+#include "odomState.hpp"
 
 int main(int argc, char *argv[]) {
     // Initialize ROS 2
@@ -11,6 +12,9 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Create ROS 2 node
+    qRegisterMetaType<odomState>("odomState");
+
+    // Create ROS 2 node as shared_ptr
     auto ros_node = std::make_shared<RosNode>();
     
     // Create main window
@@ -24,14 +28,14 @@ int main(int argc, char *argv[]) {
     QObject::connect(ros_node.get(), &RosNode::pathReceived,
                      &window, &Window::updatePathData);
 
-    QObject::connect(ros_node.get(), &RosNode::yawReceived,
-                     &window, &Window::updateYawData);
+    QObject::connect(ros_node.get(), &RosNode::odomReceived,
+                     &window, &Window::updateOdomData);
 
     QObject::connect(ros_node.get(), &RosNode::batteryReceived,
                      &window, &Window::updateBatteryData);
 
-    QObject::connect(ros_node.get(), &RosNode::robotPoseReceived,
-                     &window, &Window::updateRobotPose);
+    QObject::connect(ros_node.get(), &RosNode::imageReceived,
+                     &window, &Window::updateCameraImage);
 
     // Start ROS spinning in a separate thread
     std::thread ros_thread([ros_node]() {

@@ -1,6 +1,7 @@
 #include "imu_page.hpp"
 #include "battery_widget.hpp"
 #include "control_pad_widget.hpp"
+#include "language_manager.hpp"
 #include <cmath>
 #include <QVBoxLayout>
 #include "ros_node.hpp"
@@ -10,7 +11,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     auto *leftLayout = new QVBoxLayout();
 
-    cameraLabel = new QLabel("OCZEKIWANIE NA OBRAZ...", this);
+    cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
     cameraLabel->setMinimumSize(400, 300);
 
     cameraLabel->setStyleSheet(
@@ -32,7 +33,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *rightLayout = new QVBoxLayout();
 
     auto *topBar = new QHBoxLayout();
-    auto *title = new QLabel("LEO SYSTEM", this);
+    auto *title = new QLabel(LanguageManager::getInstance().translate("imu_title"), this);
     title->setStyleSheet("font-size: 18px; font-weight: bold; color: #444;");
 
     batteryIcon = new BatteryWidget(this);
@@ -51,7 +52,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     rightLayout->addSpacing(20);
 
-    auto *poseTitle = new QLabel("POSE", this);
+    poseTitle = new QLabel(LanguageManager::getInstance().translate("imu_pose_title"), this);
     poseTitle->setStyleSheet("color: #2980b9; font-weight: bold;");
     rightLayout->addWidget(poseTitle);
 
@@ -65,7 +66,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     rightLayout->addSpacing(20);
 
-    auto *velTitle = new QLabel("VELOCITY", this);
+    velTitle = new QLabel(LanguageManager::getInstance().translate("imu_velocity_title"), this);
     velTitle->setStyleSheet("color: #c0392b; font-weight: bold;");
     rightLayout->addWidget(velTitle);
 
@@ -87,12 +88,22 @@ void ImuPage::updateOdom(odomState state) {
     double yaw_deg = state.yaw * (180.0 / M_PI);
     double angular_vel_deg = state.angular_vel * (180.0 / M_PI);
 
-    xLabel->setText(QString("X:  %1 m").arg(state.x, 0, 'f', 1));
-    yLabel->setText(QString("Y:  %1 m").arg(state.y, 0, 'f', 1));
-    yawLabel->setText(QString("YAW:  %1 °").arg(yaw_deg, 0, 'f', 1));
+    xLabel->setText(QString("%1:  %2 %3").arg(LanguageManager::getInstance().translate("imu_x_label"), 
+                                             QString::number(state.x, 'f', 1),
+                                             LanguageManager::getInstance().translate("imu_unit_meters")));
+    yLabel->setText(QString("%1:  %2 %3").arg(LanguageManager::getInstance().translate("imu_y_label"), 
+                                             QString::number(state.y, 'f', 1),
+                                             LanguageManager::getInstance().translate("imu_unit_meters")));
+    yawLabel->setText(QString("%1:  %2 %3").arg(LanguageManager::getInstance().translate("imu_yaw_label"), 
+                                               QString::number(yaw_deg, 'f', 1),
+                                               LanguageManager::getInstance().translate("imu_unit_degrees")));
 
-    linearVelLabel->setText(QString("LIN:  %1 m/s").arg(state.linear_vel, 0, 'f', 1));
-    angularVelLabel->setText(QString("ANG:  %1 °/s").arg(angular_vel_deg, 0, 'f', 1));
+    linearVelLabel->setText(QString("%1:  %2 %3").arg(LanguageManager::getInstance().translate("imu_linear_vel"), 
+                                                     QString::number(state.linear_vel, 'f', 1),
+                                                     LanguageManager::getInstance().translate("imu_unit_ms")));
+    angularVelLabel->setText(QString("%1:  %2 %3").arg(LanguageManager::getInstance().translate("imu_angular_vel"), 
+                                                      QString::number(angular_vel_deg, 'f', 1),
+                                                      LanguageManager::getInstance().translate("imu_unit_degps")));
 }
 
 void ImuPage::updateBattery(double voltage) {
@@ -133,4 +144,18 @@ void ImuPage::setRosNode(RosNode *node) {
         connect(controlPad, &ControlPadWidget::velocityRequested, 
                 ros_node_, &RosNode::publishVelocity);
     }
+}
+
+void ImuPage::refreshLanguage() {
+    // Update title labels
+    poseTitle->setText(LanguageManager::getInstance().translate("imu_pose_title"));
+    velTitle->setText(LanguageManager::getInstance().translate("imu_velocity_title"));
+    cameraLabel->setText(LanguageManager::getInstance().translate("imu_camera_waiting"));
+    
+    // Update odom labels with fresh translations
+    // TODO: Store last odom state to refresh display with new language
+}
+
+void ImuPage::updateLabels() {
+    // TODO: Implement label updates for dynamic translation
 }

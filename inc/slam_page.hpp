@@ -147,6 +147,11 @@ public slots:
      */
     void updateRobotPose(double x, double y, double theta);
 
+    /**
+     * @brief Refresh all UI text when language changes
+     */
+    void refreshLanguage();
+
 private slots:
     void handleMoveForward();        ///< Send forward velocity command
     void handleMoveBackward();       ///< Send backward velocity command
@@ -165,6 +170,7 @@ private:
     RosNode *ros_node_;              ///< ROS node for publishing commands
     double linear_speed_;            ///< Linear velocity magnitude (m/s)
     double angular_speed_;           ///< Angular velocity magnitude (rad/s)
+    QLabel *pageTitle;               ///< Page title label for language switching
 
     /**
      * @brief Create and configure 3x3 gamepad control button grid.

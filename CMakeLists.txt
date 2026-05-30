@@ -37,6 +37,7 @@ set(SOURCES
     src/ros_node.cpp 
     src/battery_widget.cpp
     src/control_pad_widget.cpp
+    src/language_manager.cpp
     inc/window.hpp
     inc/slam_page.hpp
     inc/imu_page.hpp
@@ -44,6 +45,7 @@ set(SOURCES
     inc/battery_widget.hpp
     inc/control_pad_widget.hpp
     inc/odomState.hpp
+    inc/language_manager.hpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

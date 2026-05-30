@@ -1,5 +1,6 @@
 #include "slam_page.hpp"
 #include "ros_node.hpp"
+#include "language_manager.hpp"
 #include <QPainter>
 #include <cmath>
 #include <algorithm>
@@ -197,9 +198,9 @@ SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr),
     layout->setRowStretch(0, 3);
 
     // Add title on bottom left
-    auto *title = new QLabel("<h3>SLAM Page</h3>", this);
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title, 1, 0);
+    pageTitle = new QLabel("<h3>" + LanguageManager::getInstance().translate("slam_page") + "</h3>", this);
+    pageTitle->setAlignment(Qt::AlignCenter);
+    layout->addWidget(pageTitle, 1, 0);
     layout->setRowStretch(1, 1);
 
     // Add gamepad-style control layout on bottom right
@@ -425,5 +426,11 @@ void SlamPage::handleMoveBackwardRight() {
 void SlamPage::handleStop() {
     if (ros_node_) {
         ros_node_->publishVelocity(0.0, 0.0);
+    }
+}
+
+void SlamPage::refreshLanguage() {
+    if (pageTitle) {
+        pageTitle->setText("<h3>" + LanguageManager::getInstance().translate("slam_page") + "</h3>");
     }
 }

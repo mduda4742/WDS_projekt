@@ -61,6 +61,11 @@ public slots:
      */
     void updateCameraImage(const QImage &img);
 
+    /**
+     * @brief Refresh all UI text when language changes
+     */
+    void refreshLanguage();
+
 private:
     QLabel *xLabel;           /**< Label displaying the X-coordinate [m]. */
     QLabel *yLabel;           /**< Label displaying the Y-coordinate [m]. */
@@ -72,11 +77,19 @@ private:
     QLabel *batteryLabel;           /**< Label displaying the averaged battery voltage. */
 
     QLabel *cameraLabel;            /**< Placeholder for camera stream visualization. */
+    
+    QLabel *poseTitle;        /**< Title label for pose section */
+    QLabel *velTitle;         /**< Title label for velocity section */
 
     BatteryWidget *batteryIcon;     /**< Custom widget representing the battery visually. */
     ControlPadWidget *controlPad;   /**< Custom widget for manual robot control. */
     
     RosNode *ros_node_ = nullptr;   /**< Pointer to the underlying ROS 2 node communications manager. */
+    
+    /**
+     * @brief Update displayed text with labels
+     */
+    void updateLabels();
 };
 
 #endif

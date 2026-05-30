@@ -5,10 +5,12 @@
 #include <QLabel>
 #include <QImage>
 #include <QTabWidget>
+#include <QPushButton>
 #include <vector>
 #include "slam_page.hpp"
 #include "imu_page.hpp"
 #include "odomState.hpp"
+#include "language_manager.hpp"
 
 /**
  * @class Window
@@ -78,6 +80,11 @@ public slots:
      */
     void updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y);
 
+    /**
+     * @brief Refresh all UI text when language changes
+     */
+    void refreshLanguage();
+
 private:
     /**
      * @brief Pointer to the QTabWidget that manages Home, SLAM, and IMU pages.
@@ -95,7 +102,17 @@ private:
     ImuPage *imuPage;
 
     /**
-     * @brief Create the Home page with welcome message.
+     * @brief Label for home page title
+     */
+    QLabel *homeTitle;
+
+    /**
+     * @brief Label for home page subtitle
+     */
+    QLabel *homeSubtitle;
+
+    /**
+     * @brief Create the Home page with welcome message and language selector.
      * @return QWidget pointer to the home page
      */
     QWidget *createHomePage();

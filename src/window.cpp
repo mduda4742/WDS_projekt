@@ -1,38 +1,84 @@
 #include "window.hpp"
 #include "ros_node.hpp"
+#include "language_manager.hpp"
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 
 
-Window::Window(QWidget *parent) : QMainWindow(parent) {
-    setWindowTitle("Leo Rover Base - Qt GUI");
+Window::Window(QWidget *parent) : QMainWindow(parent), homeTitle(nullptr), homeSubtitle(nullptr) {
+    setWindowTitle(LanguageManager::getInstance().translate("window_title"));
     resize(800, 600);
 
     // Create tab widget to hold all pages
     tabWidget = new QTabWidget(this);
-    tabWidget->addTab(createHomePage(), "Home");
+    tabWidget->addTab(createHomePage(), LanguageManager::getInstance().translate("tab_home"));
     
     // Create SLAM page for LIDAR visualization and movement controls
     slamPage = new SlamPage(this);
-    tabWidget->addTab(slamPage, "SLAM");
+    tabWidget->addTab(slamPage, LanguageManager::getInstance().translate("tab_slam"));
     
     // Create IMU page for sensor data display
     imuPage = new ImuPage(this);
-    tabWidget->addTab(imuPage, "IMU");
+    tabWidget->addTab(imuPage, LanguageManager::getInstance().translate("tab_imu"));
     
     setCentralWidget(tabWidget);
+
+    // Connect language changes to update UI
+    connect(&LanguageManager::getInstance(), &LanguageManager::languageChanged,
+            this, &Window::refreshLanguage);
 }
 
 QWidget* Window::createHomePage() {
     auto *page = new QWidget(this);
-    auto *layout = new QVBoxLayout(page);
-    auto *title = new QLabel("<h1>Welcome to the WDS Project Home Page!</h1>", page);
-    auto *subtitle = new QLabel("<p>Authors: Radosław Mijał & Mateusz Duda</p>", page);
-    title->setAlignment(Qt::AlignCenter);
-    subtitle->setAlignment(Qt::AlignCenter);
+    auto *mainLayout = new QVBoxLayout(page);
+    
+    // Top section: Title and subtitle
+    auto *topLayout = new QVBoxLayout();
+    homeTitle = new QLabel("<h1>" + LanguageManager::getInstance().translate("home_welcome_title") + "</h1>", page);
+    homeTitle->setAlignment(Qt::AlignCenter);
+    
+    homeSubtitle = new QLabel("<p>" + LanguageManager::getInstance().translate("home_subtitle") + "</p>", page);
+    homeSubtitle->setAlignment(Qt::AlignCenter);
 
-    layout->addWidget(title);
-    layout->addWidget(subtitle);
+    topLayout->addWidget(homeTitle);
+    topLayout->addWidget(homeSubtitle);
+    
+    mainLayout->addLayout(topLayout);
+    
+    // Middle section: Info text area
+    auto *infoLabel = new QLabel("<p>Project Information</p>", page);
+    infoLabel->setAlignment(Qt::AlignCenter);
+    infoLabel->setStyleSheet("color: #555; font-size: 14px; padding: 40px;");
+    mainLayout->addWidget(infoLabel, 1);  // Stretch to fill available space
+    
+    // Bottom section: Language selector (bottom right corner)
+    auto *bottomLayout = new QHBoxLayout();
+    bottomLayout->addStretch();
+    
+    auto *langLabel = new QLabel(LanguageManager::getInstance().translate("home_language_label"), page);
+    
+    auto *englishBtn = new QPushButton(LanguageManager::getInstance().translate("home_english_button"), page);
+    englishBtn->setMaximumWidth(80);
+    
+    auto *polishBtn = new QPushButton(LanguageManager::getInstance().translate("home_polish_button"), page);
+    polishBtn->setMaximumWidth(80);
+    
+    connect(englishBtn, &QPushButton::clicked, [this]() {
+        LanguageManager::getInstance().setLanguage(Language::English);
+    });
+    
+    connect(polishBtn, &QPushButton::clicked, [this]() {
+        LanguageManager::getInstance().setLanguage(Language::Polish);
+    });
+    
+    bottomLayout->addWidget(langLabel);
+    bottomLayout->addWidget(englishBtn);
+    bottomLayout->addWidget(polishBtn);
+    bottomLayout->addSpacing(10);  // Small margin from right edge
+    
+    mainLayout->addLayout(bottomLayout);
 
     return page;
 }
@@ -63,4 +109,30 @@ void Window::updatePathData(const std::vector<double> &path_x, const std::vector
 void Window::setRosNode(RosNode *node) {
     slamPage->setRosNode(node);
     imuPage->setRosNode(node);
+}
+
+void Window::refreshLanguage() {
+    // Update window title
+    setWindowTitle(LanguageManager::getInstance().translate("window_title"));
+    
+    // Update tab names
+    tabWidget->setTabText(0, LanguageManager::getInstance().translate("tab_home"));
+    tabWidget->setTabText(1, LanguageManager::getInstance().translate("tab_slam"));
+    tabWidget->setTabText(2, LanguageManager::getInstance().translate("tab_imu"));
+    
+    // Update home page text
+    if (homeTitle) {
+        homeTitle->setText("<h1>" + LanguageManager::getInstance().translate("home_welcome_title") + "</h1>");
+    }
+    if (homeSubtitle) {
+        homeSubtitle->setText("<p>" + LanguageManager::getInstance().translate("home_subtitle") + "</p>");
+    }
+    
+    // Notify child pages to refresh their text
+    if (slamPage) {
+        slamPage->refreshLanguage();
+    }
+    if (imuPage) {
+        imuPage->refreshLanguage();
+    }
 }

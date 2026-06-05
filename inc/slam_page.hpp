@@ -117,7 +117,7 @@ public:
      * Must be called before using movement controls.
      * @param node Pointer to RosNode instance
      */
-    void setRosNode(RosNode *node) { ros_node_ = node; }
+    void setRosNode(RosNode *node);
 
 public slots:
     /**
@@ -152,32 +152,11 @@ public slots:
      */
     void refreshLanguage();
 
-private slots:
-    void handleMoveForward();        ///< Send forward velocity command
-    void handleMoveBackward();       ///< Send backward velocity command
-    void handleMoveLeft();           ///< Send left strafe velocity command
-    void handleMoveRight();          ///< Send right strafe velocity command
-    void handleTurnLeft();           ///< Send counter-clockwise rotation command
-    void handleTurnRight();          ///< Send clockwise rotation command
-    void handleMoveForwardLeft();    ///< Send forward-left diagonal command
-    void handleMoveForwardRight();   ///< Send forward-right diagonal command
-    void handleMoveBackwardLeft();   ///< Send backward-left diagonal command
-    void handleMoveBackwardRight();  ///< Send backward-right diagonal command
-    void handleStop();               ///< Send zero velocity command (stop robot)
-
 private:
     MapWidget *mapWidget;            ///< Widget displaying LIDAR data
     RosNode *ros_node_;              ///< ROS node for publishing commands
-    double linear_speed_;            ///< Linear velocity magnitude (m/s)
-    double angular_speed_;           ///< Angular velocity magnitude (rad/s)
     QLabel *pageTitle;               ///< Page title label for language switching
-
-    /**
-     * @brief Create and configure 3x3 gamepad control button grid.
-     * Connects button signals to movement handler slots.
-     * @param layout Grid layout to add buttons to
-     */
-    void setupControls(QGridLayout *layout);
+    ControlPadWidget *controlPad;    ///< Control pad widget for robot movement
 };
 
 #endif

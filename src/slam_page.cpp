@@ -186,36 +186,25 @@ void MapWidget::updateRobotPose(double x, double y, double theta) {
  * 3x3 gamepad grid for movement controls.
  * @param parent Parent widget
  */
-SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr), 
-                                       linear_speed_(0.5), angular_speed_(0.5) {
+SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr) {
     auto *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(5);
 
-    // Add map widget on top (takes 3/4 of the screen for LIDAR visualization)
+    // Add map widget on top (takes most of the screen for LIDAR visualization)
     mapWidget = new MapWidget(this);
     layout->addWidget(mapWidget, 0, 0, 1, 2);
     layout->setRowStretch(0, 3);
 
     // Add title on bottom left
-    pageTitle = new QLabel("<h3>" + LanguageManager::getInstance().translate("slam_page") + "</h3>", this);
+    pageTitle = new QLabel("<h3>" + LanguageManager::getInstance().translate("slam_page_title_en") + "</h3>", this);
     pageTitle->setAlignment(Qt::AlignCenter);
     layout->addWidget(pageTitle, 1, 0);
     layout->setRowStretch(1, 1);
 
-    // Add gamepad-style control layout on bottom right
-    auto *controlsWidget = new QWidget(this);
-    auto *controlsLayout = new QGridLayout(controlsWidget);
-    controlsLayout->setSpacing(3);
-    controlsLayout->setContentsMargins(5, 5, 5, 5);
-
-    // Set fixed size for square panel
-    controlsWidget->setFixedSize(200, 200);
-    controlsWidget->setStyleSheet("border: 1px solid black;");
-
-    setupControls(controlsLayout);
-
-    layout->addWidget(controlsWidget, 1, 1, Qt::AlignRight | Qt::AlignBottom);
+    // Add control pad on bottom right
+    controlPad = new ControlPadWidget(this);
+    layout->addWidget(controlPad, 1, 1, Qt::AlignRight | Qt::AlignBottom);
 }
 
 /**
@@ -226,105 +215,6 @@ SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr),
  * 
  * @param layout Grid layout to add buttons to
  */
-void SlamPage::setupControls(QGridLayout *layout) {
-    // Create all 9 directional buttons with arrow symbols
-    auto *btnUpLeft = new QPushButton("↖", this);
-    auto *btnUp = new QPushButton("↑", this);
-    auto *btnUpRight = new QPushButton("↗", this);
-
-    auto *btnLeft = new QPushButton("←", this);
-    auto *btnCenter = new QPushButton("●", this);
-    auto *btnRight = new QPushButton("→", this);
-
-    auto *btnDownLeft = new QPushButton("↙", this);
-    auto *btnDown = new QPushButton("↓", this);
-    auto *btnDownRight = new QPushButton("↘", this);
-
-    // Set button size
-    int btnSize = 40;
-    btnUpLeft->setFixedSize(btnSize, btnSize);
-    btnUp->setFixedSize(btnSize, btnSize);
-    btnUpRight->setFixedSize(btnSize, btnSize);
-    btnLeft->setFixedSize(btnSize, btnSize);
-    btnCenter->setFixedSize(btnSize, btnSize);
-    btnRight->setFixedSize(btnSize, btnSize);
-    btnDownLeft->setFixedSize(btnSize, btnSize);
-    btnDown->setFixedSize(btnSize, btnSize);
-    btnDownRight->setFixedSize(btnSize, btnSize);
-
-    // Set button stylesheets for visual feedback
-    const QString buttonStyle = R"(
-        QPushButton {
-            background-color: #4CAF50;
-            color: white;
-            border: 2px solid #2E7D32;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        QPushButton:hover {
-            background-color: #45a049;
-        }
-        QPushButton:pressed {
-            background-color: #ff9800;
-            border: 2px solid #f57c00;
-        }
-    )";
-    
-    btnUpLeft->setStyleSheet(buttonStyle);
-    btnUp->setStyleSheet(buttonStyle);
-    btnUpRight->setStyleSheet(buttonStyle);
-    btnLeft->setStyleSheet(buttonStyle);
-    btnCenter->setStyleSheet(buttonStyle);
-    btnRight->setStyleSheet(buttonStyle);
-    btnDownLeft->setStyleSheet(buttonStyle);
-    btnDown->setStyleSheet(buttonStyle);
-    btnDownRight->setStyleSheet(buttonStyle);
-
-    // Connect button signals to movement handlers
-    connect(btnUp, &QPushButton::pressed, this, &SlamPage::handleMoveForward);
-    connect(btnUp, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnDown, &QPushButton::pressed, this, &SlamPage::handleMoveBackward);
-    connect(btnDown, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnLeft, &QPushButton::pressed, this, &SlamPage::handleMoveLeft);
-    connect(btnLeft, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnRight, &QPushButton::pressed, this, &SlamPage::handleMoveRight);
-    connect(btnRight, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnUpLeft, &QPushButton::pressed, this, &SlamPage::handleMoveForwardLeft);
-    connect(btnUpLeft, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnUpRight, &QPushButton::pressed, this, &SlamPage::handleMoveForwardRight);
-    connect(btnUpRight, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnDownLeft, &QPushButton::pressed, this, &SlamPage::handleMoveBackwardLeft);
-    connect(btnDownLeft, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnDownRight, &QPushButton::pressed, this, &SlamPage::handleMoveBackwardRight);
-    connect(btnDownRight, &QPushButton::released, this, &SlamPage::handleStop);
-    
-    connect(btnCenter, &QPushButton::pressed, this, &SlamPage::handleStop);
-
-    // Arrange buttons in 3x3 grid:
-    // ↖ ↑ ↗
-    // ← ● →
-    // ↙ ↓ ↘
-    layout->addWidget(btnUpLeft, 0, 0);
-    layout->addWidget(btnUp, 0, 1);
-    layout->addWidget(btnUpRight, 0, 2);
-
-    layout->addWidget(btnLeft, 1, 0);
-    layout->addWidget(btnCenter, 1, 1);
-    layout->addWidget(btnRight, 1, 2);
-
-    layout->addWidget(btnDownLeft, 2, 0);
-    layout->addWidget(btnDown, 2, 1);
-    layout->addWidget(btnDownRight, 2, 2);
-}
-
 /**
  * @brief Forward LIDAR scan data to MapWidget for visualization.
  * 
@@ -352,80 +242,12 @@ void SlamPage::updateRobotPose(double x, double y, double theta) {
     mapWidget->updateRobotPose(x, y, theta);
 }
 
-/// @brief Send forward velocity command to robot
-void SlamPage::handleMoveForward() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send backward velocity command to robot
-void SlamPage::handleMoveBackward() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send left strafe velocity command to robot
-void SlamPage::handleMoveLeft() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send right strafe velocity command to robot
-void SlamPage::handleMoveRight() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send counter-clockwise rotation command to robot
-void SlamPage::handleTurnLeft() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send clockwise rotation command to robot
-void SlamPage::handleTurnRight() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send forward-left diagonal movement command
-void SlamPage::handleMoveForwardLeft() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send forward-right diagonal movement command
-void SlamPage::handleMoveForwardRight() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send backward-left diagonal movement command
-void SlamPage::handleMoveBackwardLeft() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send backward-right diagonal movement command
-void SlamPage::handleMoveBackwardRight() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
-    }
-}
-
-/// @brief Send zero velocity command to stop the robot
-void SlamPage::handleStop() {
-    if (ros_node_) {
-        ros_node_->publishVelocity(0.0, 0.0);
+void SlamPage::setRosNode(RosNode *node) {
+    ros_node_ = node;
+    
+    if (ros_node_ && controlPad) {
+        connect(controlPad, &ControlPadWidget::velocityRequested,
+                ros_node_, &RosNode::publishVelocity);
     }
 }
 

@@ -31,7 +31,7 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
 
     laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "/scan",
-        10,
+        rclcpp::SensorDataQoS(),
         std::bind(&RosNode::laserScanCallback, this, _1)
     );
 
@@ -42,6 +42,12 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
         std::bind(&RosNode::pathCallback, this, _1)
     );
 
+    // Subscribe to merged odometry for robot pose and trajectory
+    odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
+        "merged_odom",
+        10,
+        std::bind(&RosNode::odomCallback, this, _1)
+    );
     
     cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
         "cmd_vel",
@@ -64,6 +70,30 @@ void RosNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
     state.angular_vel = msg->twist.twist.angular.z;
 
     emit odomReceived(state);
+    
+    // Update robot pose for marker visualization
+    robot_x_ = state.x;
+    robot_y_ = state.y;
+    robot_theta_ = state.yaw;
+    emit robotPoseReceived(robot_x_, robot_y_, robot_theta_);
+    
+    // Accumulate pose into path history
+    path_x_.push_back(robot_x_);
+    path_y_.push_back(robot_y_);
+    
+    // Limit path history to last 1000 poses to avoid memory issues
+    const size_t max_path_size = 1000;
+    if (path_x_.size() > max_path_size) {
+        path_x_.erase(path_x_.begin());
+        path_y_.erase(path_y_.begin());
+    }
+    
+    // Emit path periodically (throttle to avoid excessive updates)
+    double current_time = this->now().seconds();
+    if (current_time - last_path_emit_time_ > 0.1) {  // Emit path every 100ms
+        emit pathReceived(path_x_, path_y_);
+        last_path_emit_time_ = current_time;
+    }
 }
 
 void RosNode::batteryCallback(const std_msgs::msg::Float32::SharedPtr msg) {

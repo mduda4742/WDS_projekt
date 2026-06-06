@@ -37,6 +37,9 @@ int main(int argc, char *argv[]) {
     QObject::connect(ros_node.get(), &RosNode::imageReceived,
                      &window, &Window::updateCameraImage);
 
+    QObject::connect(ros_node.get(), &RosNode::robotPoseReceived,
+                     &window, &Window::updateRobotPose);
+
     // Start ROS spinning in a separate thread
     std::thread ros_thread([ros_node]() {
         rclcpp::spin(ros_node);

@@ -106,6 +106,10 @@ void Window::updatePathData(const std::vector<double> &path_x, const std::vector
     slamPage->updatePathData(path_x, path_y);
 }
 
+void Window::updateRobotPose(double x, double y, double theta) {
+    slamPage->updateRobotPose(x, y, theta);
+}
+
 void Window::setRosNode(RosNode *node) {
     slamPage->setRosNode(node);
     imuPage->setRosNode(node);

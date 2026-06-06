@@ -48,11 +48,11 @@ void MapWidget::paintEvent(QPaintEvent *event) {
     int centerY = height() / 2;
     painter.save();
     painter.translate(centerX, centerY);
-    painter.rotate(-robot_theta_ * 180.0 / M_PI); // Negative for clockwise rotation in Qt
+    // The robot marker is now fixed pointing up; the world rotates around it.
     painter.setPen(QPen(Qt::green, 2));
     painter.setBrush(Qt::green);
     QPointF points[3] = {
-        QPointF(15, 0), QPointF(-7, -7), QPointF(-7, 7)
+        QPointF(0, -15), QPointF(-7, 7), QPointF(7, 7) // Points UP
     };
     painter.drawPolygon(points, 3);
     painter.restore();
@@ -67,7 +67,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
  * @param painter Qt painter object for drawing
  */
 void MapWidget::drawLaserScan(QPainter &painter) {
-    float maxRange = 10.0f; // Maximum visible range in meters
+    float maxRange = 5.0f; // Maximum visible range in meters
     float scale = std::min(width(), height()) / (2.0f * maxRange);
     int centerX = width() / 2;
     int centerY = height() / 2;
@@ -86,11 +86,15 @@ void MapWidget::drawLaserScan(QPainter &painter) {
             firstPoint = true;
             continue;
         }
-        float angle = angle_min_ + i * angle_increment_ + robot_theta_;
-        float x = range * std::cos(angle);
-        float y = range * std::sin(angle);
-        int screenX = centerX + static_cast<int>(x * scale);
-        int screenY = centerY - static_cast<int>(y * scale);
+        // Angle in robot's local frame
+        float angle = angle_min_ + i * angle_increment_;
+        // LIDAR frame: 0 angle is forward (+x), angle increases CCW, so +y is left
+        float robot_fwd_component = range * std::cos(angle);
+        float robot_left_component = range * std::sin(angle);
+
+        // Transform to screen frame (robot arrow points UP, so fwd is -Y_screen, left is -X_screen)
+        int screenX = centerX - static_cast<int>(robot_left_component * scale);
+        int screenY = centerY - static_cast<int>(robot_fwd_component * scale);
         QPoint currentPoint(screenX, screenY);
         if (!firstPoint) {
             painter.drawLine(prevPoint, currentPoint);
@@ -104,11 +108,15 @@ void MapWidget::drawLaserScan(QPainter &painter) {
     for (size_t i = 0; i < ranges_.size(); ++i) {
         float range = ranges_[i];
         if (!std::isfinite(range) || range <= 0.0f) continue;
-        float angle = angle_min_ + i * angle_increment_ + robot_theta_;
-        float x = range * std::cos(angle);
-        float y = range * std::sin(angle);
-        int screenX = centerX + static_cast<int>(x * scale);
-        int screenY = centerY - static_cast<int>(y * scale);
+        // Angle in robot's local frame
+        float angle = angle_min_ + i * angle_increment_;
+        // LIDAR frame: 0 angle is forward (+x), angle increases CCW, so +y is left
+        float robot_fwd_component = range * std::cos(angle);
+        float robot_left_component = range * std::sin(angle);
+
+        // Transform to screen frame (robot arrow points UP, so fwd is -Y_screen, left is -X_screen)
+        int screenX = centerX - static_cast<int>(robot_left_component * scale);
+        int screenY = centerY - static_cast<int>(robot_fwd_component * scale);
         painter.drawPoint(screenX, screenY);
     }
 }
@@ -126,17 +134,33 @@ void MapWidget::drawPath(QPainter &painter) {
     }
     
     painter.setPen(QPen(Qt::yellow, 2));
-    float maxRange = 10.0f;  // Same scale as LIDAR visualization
+    float maxRange = 5.0f;  // Same scale as LIDAR visualization
     float scale = std::min(width(), height()) / (2.0f * maxRange);
     int centerX = width() / 2;
     int centerY = height() / 2;
-
+    
+    const double cos_theta = std::cos(robot_theta_);
+    const double sin_theta = std::sin(robot_theta_);
+ 
     for (size_t i = 0; i < path_x_.size() - 1; ++i) {
-        // Convert world coordinates to screen coordinates relative to robot pose
-        int x1 = centerX + static_cast<int>((path_x_[i] - robot_x_) * scale);
-        int y1 = centerY - static_cast<int>((path_y_[i] - robot_y_) * scale);
-        int x2 = centerX + static_cast<int>((path_x_[i + 1] - robot_x_) * scale);
-        int y2 = centerY - static_cast<int>((path_y_[i + 1] - robot_y_) * scale);
+        // --- Transform point i from world frame to screen frame ---
+        // 1. Get point relative to robot in world frame
+        double dx1 = path_x_[i] - robot_x_;
+        double dy1 = path_y_[i] - robot_y_;
+        // 2. Rotate point into robot's local frame (+x fwd, +y left)
+        double p1_robot_fwd = dx1 * cos_theta + dy1 * sin_theta;
+        double p1_robot_left = -dx1 * sin_theta + dy1 * cos_theta;
+        // 3. Transform to screen coordinates (robot arrow points UP, so fwd is -Y_screen, left is -X_screen)
+        int x1 = centerX - static_cast<int>(p1_robot_left * scale);
+        int y1 = centerY - static_cast<int>(p1_robot_fwd * scale);
+
+        // --- Transform point i+1 from world frame to screen frame ---
+        double dx2 = path_x_[i + 1] - robot_x_;
+        double dy2 = path_y_[i + 1] - robot_y_;
+        double p2_robot_fwd = dx2 * cos_theta + dy2 * sin_theta;
+        double p2_robot_left = -dx2 * sin_theta + dy2 * cos_theta;
+        int x2 = centerX - static_cast<int>(p2_robot_left * scale);
+        int y2 = centerY - static_cast<int>(p2_robot_fwd * scale);
         painter.drawLine(x1, y1, x2, y2);
     }
 }

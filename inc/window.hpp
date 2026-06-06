@@ -81,6 +81,14 @@ public slots:
     void updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y);
 
     /**
+     * @brief Forward robot pose updates to the SLAM page for correct path transformations.
+     * @param x - robot X position in meters
+     * @param y - robot Y position in meters
+     * @param theta - robot orientation angle in radians
+     */
+    void updateRobotPose(double x, double y, double theta);
+
+    /**
      * @brief Refresh all UI text when language changes
      */
     void refreshLanguage();

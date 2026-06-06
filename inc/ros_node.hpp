@@ -141,6 +141,11 @@ private:
     double robot_theta_ = 0.0;  ///< Robot orientation angle (radians)
     double last_update_time_ = 0.0;  ///< Last time pose was updated (seconds)
 
+    /// Path accumulation for trajectory visualization
+    std::vector<double> path_x_;      ///< Accumulated X coordinates of robot path
+    std::vector<double> path_y_;      ///< Accumulated Y coordinates of robot path
+    double last_path_emit_time_ = 0.0;  ///< Last time path was emitted (seconds)
+
     // ROS 2 Subscriptions
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;             ///< Subscription for robot odometry data
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr battery_sub_;           ///< Subscription for battery voltage readings

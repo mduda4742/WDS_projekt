@@ -120,6 +120,11 @@ private:
     QLabel *homeSubtitle;
 
     /**
+     * @brief Label for home page info text
+     */
+    QLabel *homeInfoLabel;
+
+    /**
      * @brief Create the Home page with welcome message and language selector.
      * @return QWidget pointer to the home page
      */

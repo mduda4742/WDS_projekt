@@ -155,7 +155,6 @@ public slots:
 private:
     MapWidget *mapWidget;            ///< Widget displaying LIDAR data
     RosNode *ros_node_;              ///< ROS node for publishing commands
-    QLabel *pageTitle;               ///< Page title label for language switching
     ControlPadWidget *controlPad;    ///< Control pad widget for robot movement
 };
 

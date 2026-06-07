@@ -6,7 +6,7 @@
 
 ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
 
-    setFixedSize(200, 200);
+    setFixedSize(220, 220);
     setStyleSheet("border: 1px solid black; background-color: transparent;");
 
     auto *layout = new QGridLayout(this);
@@ -24,7 +24,7 @@ ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
             border: 2px solid #2E7D32;  /* Ciemniejsza ramka */
             border-radius: 5px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 28px;
         }
         QPushButton:hover {
             background-color: #45a049;
@@ -35,7 +35,7 @@ ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
         }
     )";
 
-    // 4. Definicja przycisków: {Symbol, Wiersz, Kolumna, Kierunek_X, Kierunek_Y}
+    // Definicja przycisków: {Symbol, Wiersz, Kolumna, Kierunek_X, Kierunek_Y}
     struct BtnDef { QString icon; int row; int col; double v_lin; double v_ang; };
     QList<BtnDef> btnDefs = {
         {"↖", 0, 0, 1, 1},  {"↑", 0, 1, 1, 0},  {"↗", 0, 2, 1, -1},
@@ -45,7 +45,7 @@ ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
 
     for (const auto &d : btnDefs) {
         auto *btn = new QPushButton(d.icon, this);
-        btn->setFixedSize(40, 40);
+        btn->setFixedSize(60, 60);
         btn->setStyleSheet(buttonStyle);
 
         // Przechowujemy wartości prędkości wewnątrz przycisku

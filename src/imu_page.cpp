@@ -16,7 +16,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     cameraLabel->setStyleSheet(
         "background-color: #000000; "
-        "color: #555555; "
+        "color: white; "
         "border: 3px solid #333333; "
         "border-radius: 10px; "
         "font-weight: bold;"
@@ -34,13 +34,13 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     auto *topBar = new QHBoxLayout();
     auto *title = new QLabel(LanguageManager::getInstance().translate("imu_title"), this);
-    title->setStyleSheet("font-size: 18px; font-weight: bold; color: #444;");
+    title->setStyleSheet("font-weight: bold;");
 
     batteryIcon = new BatteryWidget(this);
 
     batteryLabel = new QLabel("12.4 V", this);
-    batteryLabel->setFixedSize(65, 25);
-    batteryLabel->setStyleSheet("background: #222; color: #00FF00; border-radius: 3px; font-family: Monospace;");
+    batteryLabel->setFixedSize(120, 45);
+    batteryLabel->setStyleSheet("background: #222; color: white; border-radius: 3px; font-family: Monospace;");
     batteryLabel->setAlignment(Qt::AlignCenter);
 
     topBar->addWidget(title);
@@ -53,7 +53,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     rightLayout->addSpacing(20);
 
     poseTitle = new QLabel(LanguageManager::getInstance().translate("imu_pose_title"), this);
-    poseTitle->setStyleSheet("color: #2980b9; font-weight: bold;");
+    poseTitle->setStyleSheet("font-weight: bold;");
     rightLayout->addWidget(poseTitle);
 
     xLabel   = new QLabel("X:  0.0 m", this);
@@ -67,7 +67,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     rightLayout->addSpacing(20);
 
     velTitle = new QLabel(LanguageManager::getInstance().translate("imu_velocity_title"), this);
-    velTitle->setStyleSheet("color: #c0392b; font-weight: bold;");
+    velTitle->setStyleSheet("font-weight: bold;");
     rightLayout->addWidget(velTitle);
 
     linearVelLabel  = new QLabel("LIN:  0.0 m/s", this);
@@ -119,9 +119,9 @@ void ImuPage::updateBattery(double voltage) {
     batteryIcon->setLevel(level);
 
     if (level <= 0.2) {
-        batteryLabel->setStyleSheet("color: #FF0000; font-family: Monospace; font-weight: bold;");
+        batteryLabel->setStyleSheet("color: white; background: #AA0000; font-family: Monospace; font-weight: bold;");
     } else {
-        batteryLabel->setStyleSheet("color: #00FF00; font-family: Monospace; font-weight: bold;");
+        batteryLabel->setStyleSheet("color: white; background: #222; font-family: Monospace; font-weight: bold;");
     }
 }
 

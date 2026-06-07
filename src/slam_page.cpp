@@ -114,13 +114,13 @@ void MapWidget::drawPath(QPainter &painter) {
  
     for (size_t i = 0; i < path_x_.size() - 1; ++i) {
         // --- Transform point i from world frame to screen frame ---
-        // 1. Get point relative to robot in world frame
+        //  Get point relative to robot in world frame
         double dx1 = path_x_[i] - robot_x_;
         double dy1 = path_y_[i] - robot_y_;
-        // 2. Rotate point into robot's local frame (+x fwd, +y left)
+        //  Rotate point into robot's local frame (+x fwd, +y left)
         double p1_robot_fwd = dx1 * cos_theta + dy1 * sin_theta;
         double p1_robot_left = -dx1 * sin_theta + dy1 * cos_theta;
-        // 3. Transform to screen coordinates (robot arrow points UP, so fwd is -Y_screen, left is -X_screen)
+        //  Transform to screen coordinates (robot arrow points UP, so fwd is -Y_screen, left is -X_screen)
         int x1 = centerX - static_cast<int>(p1_robot_left * scale);
         int y1 = centerY - static_cast<int>(p1_robot_fwd * scale);
 
@@ -190,15 +190,10 @@ SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr) {
     layout->addWidget(mapWidget, 0, 0, 1, 2);
     layout->setRowStretch(0, 3);
 
-    // Add title on bottom left
-    pageTitle = new QLabel("<h3>" + LanguageManager::getInstance().translate("slam_page_title_en") + "</h3>", this);
-    pageTitle->setAlignment(Qt::AlignCenter);
-    layout->addWidget(pageTitle, 1, 0);
-    layout->setRowStretch(1, 1);
-
     // Add control pad on bottom right
     controlPad = new ControlPadWidget(this);
-    layout->addWidget(controlPad, 1, 1, Qt::AlignRight | Qt::AlignBottom);
+    layout->addWidget(controlPad, 1, 0, 1, 2, Qt::AlignRight | Qt::AlignBottom);
+    layout->setRowStretch(1, 1);
 }
 
 /**
@@ -246,7 +241,4 @@ void SlamPage::setRosNode(RosNode *node) {
 }
 
 void SlamPage::refreshLanguage() {
-    if (pageTitle) {
-        pageTitle->setText("<h3>" + LanguageManager::getInstance().translate("slam_page") + "</h3>");
-    }
 }

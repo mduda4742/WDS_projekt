@@ -48,6 +48,22 @@ void LanguageManager::initializeTranslations() {
     translations_["home_subtitle"] = 
         {"Authors: Radosław Mijał & Mateusz Duda", "Autorzy: Radosław Mijał & Mateusz Duda"};
     
+    translations_["home_info_text"] = 
+        {"<div style='text-align: left;'>"
+         "<h3>Project Functionalities:</h3>"
+         "<ul>"
+         "<li><b>Home:</b> Welcome page and language selection.</li>"
+         "<li><b>SLAM:</b> Real-time LiDAR point cloud visualization and robot path tracking.</li>"
+         "<li><b>IMU & Control:</b> Telemetry data display (position, velocity, battery), camera stream, and manual robot control pad.</li>"
+         "</ul></div>", 
+         "<div style='text-align: left;'>"
+         "<h3>Funkcjonalności projektu:</h3>"
+         "<ul>"
+         "<li><b>Strona główna:</b> Ekran powitalny i wybór języka.</li>"
+         "<li><b>SLAM:</b> Wizualizacja chmury punktów z LiDAR-a w czasie rzeczywistym oraz śledzenie ścieżki robota.</li>"
+         "<li><b>IMU i Sterowanie:</b> Wyświetlanie danych telemetrycznych (pozycja, prędkość, bateria), strumień z kamery i panel ręcznego sterowania robotem.</li>"
+         "</ul></div>"};
+    
     translations_["home_language_label"] = 
         {"Language:", "Język:"};
     
@@ -87,7 +103,7 @@ void LanguageManager::initializeTranslations() {
         {"Y", "Y"};
     
     translations_["imu_yaw_label"] = 
-        {"YAW", "KĄT"};
+        {"YAW", "YAW"};
     
     translations_["imu_linear_vel"] = 
         {"LIN", "LIN"};
@@ -110,9 +126,6 @@ void LanguageManager::initializeTranslations() {
     // ===== SLAM PAGE =====
     translations_["slam_title"] = 
         {"SLAM Visualization", "Wizualizacja SLAM"};
-    
-    translations_["slam_page"] = 
-        {"SLAM Page EN", "SLAM Page PL"};
     
     // ===== CONTROL PAD =====
     translations_["control_forward"] = 

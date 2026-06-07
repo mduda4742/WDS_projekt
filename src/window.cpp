@@ -7,12 +7,39 @@
 #include <QPushButton>
 
 
-Window::Window(QWidget *parent) : QMainWindow(parent), homeTitle(nullptr), homeSubtitle(nullptr) {
+Window::Window(QWidget *parent) : QMainWindow(parent), homeTitle(nullptr), homeSubtitle(nullptr), homeInfoLabel(nullptr) {
     setWindowTitle(LanguageManager::getInstance().translate("window_title"));
-    resize(800, 600);
+    showFullScreen();
+
+    // Apply global dark theme with white, much larger text
+    setStyleSheet("QWidget { background-color: #222222; color: white; font-size: 28px; }"
+                  "QTabWidget::pane { border: 1px solid #444; }"
+                  "QTabBar::tab { background: #333; padding: 12px 24px; }"
+                  "QTabBar::tab:selected { background: #555; }");
+
+    // Create window control buttons for the top right corner
+    auto *cornerWidget = new QWidget(this);
+    auto *cornerLayout = new QHBoxLayout(cornerWidget);
+    cornerLayout->setContentsMargins(0, 0, 0, 0);
+    
+    auto *minBtn = new QPushButton("_", cornerWidget);
+    auto *adjBtn = new QPushButton("□", cornerWidget);
+    auto *closeBtn = new QPushButton("✕", cornerWidget);
+    
+    connect(minBtn, &QPushButton::clicked, this, &QWidget::showMinimized);
+    connect(adjBtn, &QPushButton::clicked, [this]() {
+        if (this->isFullScreen()) this->showNormal();
+        else this->showFullScreen();
+    });
+    connect(closeBtn, &QPushButton::clicked, this, &QWidget::close);
+    
+    cornerLayout->addWidget(minBtn);
+    cornerLayout->addWidget(adjBtn);
+    cornerLayout->addWidget(closeBtn);
 
     // Create tab widget to hold all pages
     tabWidget = new QTabWidget(this);
+    tabWidget->setCornerWidget(cornerWidget, Qt::TopRightCorner);
     tabWidget->addTab(createHomePage(), LanguageManager::getInstance().translate("tab_home"));
     
     // Create SLAM page for LIDAR visualization and movement controls
@@ -48,10 +75,10 @@ QWidget* Window::createHomePage() {
     mainLayout->addLayout(topLayout);
     
     // Middle section: Info text area
-    auto *infoLabel = new QLabel("<p>Project Information</p>", page);
-    infoLabel->setAlignment(Qt::AlignCenter);
-    infoLabel->setStyleSheet("color: #555; font-size: 14px; padding: 40px;");
-    mainLayout->addWidget(infoLabel, 1);  // Stretch to fill available space
+    homeInfoLabel = new QLabel(LanguageManager::getInstance().translate("home_info_text"), page);
+    homeInfoLabel->setAlignment(Qt::AlignCenter);
+    homeInfoLabel->setStyleSheet("padding: 40px;");
+    mainLayout->addWidget(homeInfoLabel, 1);  // Stretch to fill available space
     
     // Bottom section: Language selector (bottom right corner)
     auto *bottomLayout = new QHBoxLayout();
@@ -60,10 +87,10 @@ QWidget* Window::createHomePage() {
     auto *langLabel = new QLabel(LanguageManager::getInstance().translate("home_language_label"), page);
     
     auto *englishBtn = new QPushButton(LanguageManager::getInstance().translate("home_english_button"), page);
-    englishBtn->setMaximumWidth(80);
+    englishBtn->setMaximumWidth(150);
     
     auto *polishBtn = new QPushButton(LanguageManager::getInstance().translate("home_polish_button"), page);
-    polishBtn->setMaximumWidth(80);
+    polishBtn->setMaximumWidth(150);
     
     connect(englishBtn, &QPushButton::clicked, [this]() {
         LanguageManager::getInstance().setLanguage(Language::English);
@@ -130,6 +157,9 @@ void Window::refreshLanguage() {
     }
     if (homeSubtitle) {
         homeSubtitle->setText("<p>" + LanguageManager::getInstance().translate("home_subtitle") + "</p>");
+    }
+    if (homeInfoLabel) {
+        homeInfoLabel->setText(LanguageManager::getInstance().translate("home_info_text"));
     }
     
     // Notify child pages to refresh their text

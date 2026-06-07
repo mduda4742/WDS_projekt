@@ -11,21 +11,11 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     auto *leftLayout = new QVBoxLayout();
 
-    cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
-    cameraLabel->setMinimumSize(400, 300);
+    view25d = new View25DWidget(this);
+    view25d->setMinimumSize(400, 300);
+    view25d->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    cameraLabel->setStyleSheet(
-        "background-color: #000000; "
-        "color: white; "
-        "border: 3px solid #333333; "
-        "border-radius: 10px; "
-        "font-weight: bold;"
-        );
-
-    cameraLabel->setAlignment(Qt::AlignCenter);
-    cameraLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    leftLayout->addWidget(cameraLabel);
+    leftLayout->addWidget(view25d);
     leftLayout->addStretch();
 
     mainHLayout->addLayout(leftLayout, 2);
@@ -126,14 +116,14 @@ void ImuPage::updateBattery(double voltage) {
 }
 
 void ImuPage::updateCameraImage(const QImage &image) {
-    if (!image.isNull()) {
-        cameraLabel->setPixmap(
-            QPixmap::fromImage(image).scaled(
-                cameraLabel->size(),
-                Qt::KeepAspectRatio, 
-                Qt::SmoothTransformation 
-            )
-        );
+    if (!image.isNull() && view25d) {
+        view25d->updateImage(image);
+    }
+}
+
+void ImuPage::updateLaserScan(const std::vector<float> &ranges, float angle_min, float angle_max, float angle_increment) {
+    if (view25d) {
+        view25d->updateLaserScan(ranges, angle_min, angle_max, angle_increment);
     }
 }
 
@@ -150,7 +140,6 @@ void ImuPage::refreshLanguage() {
     // Update title labels
     poseTitle->setText(LanguageManager::getInstance().translate("imu_pose_title"));
     velTitle->setText(LanguageManager::getInstance().translate("imu_velocity_title"));
-    cameraLabel->setText(LanguageManager::getInstance().translate("imu_camera_waiting"));
     
     // Update odom labels with fresh translations
     // TODO: Store last odom state to refresh display with new language

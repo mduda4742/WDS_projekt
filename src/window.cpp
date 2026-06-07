@@ -127,6 +127,9 @@ void Window::updateCameraImage(const QImage &image) {
 void Window::updateLaserData(const std::vector<float> &ranges, 
                             float angle_min, float angle_max, float angle_increment) {
     slamPage->updateLaserData(ranges, angle_min, angle_max, angle_increment);
+    if (imuPage) {
+        imuPage->updateLaserScan(ranges, angle_min, angle_max, angle_increment);
+    }
 }
 
 void Window::updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y) {

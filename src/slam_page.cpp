@@ -67,7 +67,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
  * @param painter Qt painter object for drawing
  */
 void MapWidget::drawLaserScan(QPainter &painter) {
-    float maxRange = 5.0f; // Maximum visible range in meters
+    float maxRange = 12.0f; // Maximum visible range in meters
     float scale = std::min(width(), height()) / (2.0f * maxRange);
     int centerX = width() / 2;
     int centerY = height() / 2;
@@ -104,7 +104,7 @@ void MapWidget::drawPath(QPainter &painter) {
     }
     
     painter.setPen(QPen(Qt::yellow, 2));
-    float maxRange = 5.0f;  // Same scale as LIDAR visualization
+    float maxRange = 12.0f;  // Same scale as LIDAR visualization
     float scale = std::min(width(), height()) / (2.0f * maxRange);
     int centerX = width() / 2;
     int centerY = height() / 2;

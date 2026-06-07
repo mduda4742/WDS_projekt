@@ -9,6 +9,8 @@
 #include "control_pad_widget.hpp"
 #include "ros_node.hpp"
 #include "odomState.hpp"
+#include "view_25d_widget.hpp"
+#include <vector>
 
 /**
  * @class ImuPage
@@ -62,6 +64,15 @@ public slots:
     void updateCameraImage(const QImage &img);
 
     /**
+     * @brief Updates the 2.5D view with new laser scan data.
+     * @param ranges - vector of distance measurements in meters
+     * @param angle_min - minimum scan angle
+     * @param angle_max - maximum scan angle
+     * @param angle_increment - angular resolution
+     */
+    void updateLaserScan(const std::vector<float> &ranges, float angle_min, float angle_max, float angle_increment);
+
+    /**
      * @brief Refresh all UI text when language changes
      */
     void refreshLanguage();
@@ -76,7 +87,7 @@ private:
 
     QLabel *batteryLabel;           /**< Label displaying the averaged battery voltage. */
 
-    QLabel *cameraLabel;            /**< Placeholder for camera stream visualization. */
+    View25DWidget *view25d;         /**< OpenGL widget for 2.5D environment visualization. */
     
     QLabel *poseTitle;        /**< Title label for pose section */
     QLabel *velTitle;         /**< Title label for velocity section */

@@ -12,7 +12,8 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # Find Qt6 libraries
-find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui OpenGL OpenGLWidgets)
+find_package(OpenGL REQUIRED)
 
 # Find ROS 2 libraries
 find_package(rclcpp REQUIRED)
@@ -38,6 +39,7 @@ set(SOURCES
     src/battery_widget.cpp
     src/control_pad_widget.cpp
     src/language_manager.cpp
+    src/view_25d_widget.cpp
     inc/window.hpp
     inc/slam_page.hpp
     inc/imu_page.hpp
@@ -46,6 +48,7 @@ set(SOURCES
     inc/control_pad_widget.hpp
     inc/odomState.hpp
     inc/language_manager.hpp
+    inc/view_25d_widget.hpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -56,6 +59,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Widgets
     Qt6::Core
     Qt6::Gui
+    Qt6::OpenGL
+    Qt6::OpenGLWidgets
+    OpenGL::GL
     rclcpp::rclcpp
     std_msgs::std_msgs__rosidl_typesupport_cpp
     geometry_msgs::geometry_msgs__rosidl_typesupport_cpp

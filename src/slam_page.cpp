@@ -59,9 +59,9 @@ void MapWidget::paintEvent(QPaintEvent *event) {
 }
 
 /**
- * @brief Convert polar LIDAR coordinates to Cartesian and draw points with connecting lines.
+ * @brief Convert polar LIDAR coordinates to Cartesian and draw points.
  * 
- * Red lines connect consecutive measurements, cyan dots mark individual points.
+ * Cyan dots mark individual points.
  * Invalid measurements (NaN, infinity, or zero) are skipped.
  * 
  * @param painter Qt painter object for drawing
@@ -72,44 +72,14 @@ void MapWidget::drawLaserScan(QPainter &painter) {
     int centerX = width() / 2;
     int centerY = height() / 2;
 
-    QPen linePen(Qt::red, 2);
     QPen pointPen(Qt::cyan, 3);
 
-    QPoint prevPoint(centerX, centerY);
-    bool firstPoint = true;
-    
-    // First pass: draw lines
-    painter.setPen(linePen);
-    for (size_t i = 0; i < ranges_.size(); ++i) {
-        float range = ranges_[i];
-        if (!std::isfinite(range) || range <= 0.0f) {
-            firstPoint = true;
-            continue;
-        }
-        // Angle in robot's local frame
-        float angle = angle_min_ + i * angle_increment_;
-        // LIDAR frame: 0 angle is forward (+x), angle increases CCW, so +y is left
-        float robot_fwd_component = range * std::cos(angle);
-        float robot_left_component = range * std::sin(angle);
-
-        // Transform to screen frame (robot arrow points UP, so fwd is -Y_screen, left is -X_screen)
-        int screenX = centerX - static_cast<int>(robot_left_component * scale);
-        int screenY = centerY - static_cast<int>(robot_fwd_component * scale);
-        QPoint currentPoint(screenX, screenY);
-        if (!firstPoint) {
-            painter.drawLine(prevPoint, currentPoint);
-        }
-        prevPoint = currentPoint;
-        firstPoint = false;
-    }
-    
-    // Second pass: draw points on top
     painter.setPen(pointPen);
     for (size_t i = 0; i < ranges_.size(); ++i) {
         float range = ranges_[i];
         if (!std::isfinite(range) || range <= 0.0f) continue;
-        // Angle in robot's local frame
-        float angle = angle_min_ + i * angle_increment_;
+        // Angle in robot's local frame, rotated 90 degrees counter-clockwise
+        float angle = angle_min_ + i * angle_increment_ + (M_PI / 2.0f);
         // LIDAR frame: 0 angle is forward (+x), angle increases CCW, so +y is left
         float robot_fwd_component = range * std::cos(angle);
         float robot_left_component = range * std::sin(angle);

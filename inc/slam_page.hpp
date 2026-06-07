@@ -82,7 +82,7 @@ private:
     double robot_theta_;              ///< Robot orientation (yaw) in map frame
     
     /**
-     * @brief Convert polar LIDAR coordinates to Cartesian and draw points and connections.
+     * @brief Convert polar LIDAR coordinates to Cartesian and draw points.
      * @param painter Qt painter object for drawing
      */
     void drawLaserScan(QPainter &painter);

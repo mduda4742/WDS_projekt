@@ -10,6 +10,10 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include <QString>
+#include <QVector3D>
+#include <QVector>
+
 class GLRoverWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -45,6 +49,10 @@ private:
     float m_targetX, m_targetY, m_targetZ;
 
     QPoint m_lastMousePos;
+
+    int m_vertexCount;
+
+    bool loadOBJ(const QString &path);
 
     void loadDummyData();
 };

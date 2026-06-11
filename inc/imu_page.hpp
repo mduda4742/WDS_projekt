@@ -13,8 +13,7 @@
 /**
  * @class ImuPage
  * @brief Widget class that displays real-time telemetry data.
- * 
- * The ImuPage provides a graphical interface to show the data processed
+ * * The ImuPage provides a graphical interface to show the data processed
  * by the RosNode. It receives updates via slots and formats them into
  * human-readable text labels.
  */
@@ -78,8 +77,17 @@ private:
 
     QLabel *cameraLabel;            /**< Placeholder for camera stream visualization. */
     
-    QLabel *poseTitle;        /**< Title label for pose section */
-    QLabel *velTitle;         /**< Title label for velocity section */
+    QLabel *mainTitleLabel;         /**< Main title label (LEO SYSTEM). */
+    
+    QLabel *poseTitle;              /**< Title label for pose section. */
+    QLabel *velTitle;               /**< Title label for velocity section. */
+    
+    QLabel *xTitleLabel;            /**< Title label for X axis. */
+    QLabel *yTitleLabel;            /**< Title label for Y axis. */
+    QLabel *yawTitleLabel;          /**< Title label for Yaw axis. */
+    
+    QLabel *linTitleLabel;          /**< Title label for Linear velocity. */
+    QLabel *angTitleLabel;          /**< Title label for Angular velocity. */
 
     BatteryWidget *batteryIcon;     /**< Custom widget representing the battery visually. */
     ControlPadWidget *controlPad;   /**< Custom widget for manual robot control. */

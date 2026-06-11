@@ -125,6 +125,15 @@ private:
     QLabel *homeInfoLabel;
 
     /**
+     * @brief Label for language text
+     */
+    QLabel *langLabel;
+
+    QPushButton *englishBtn;
+    QPushButton *polishBtn;
+
+
+    /**
      * @brief Create the Home page with welcome message and language selector.
      * @return QWidget pointer to the home page
      */

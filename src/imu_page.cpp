@@ -7,49 +7,47 @@
 #include <QVBoxLayout>
 #include "ros_node.hpp"
 
-
 ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *mainHLayout = new QHBoxLayout(this);
 
     auto *leftLayout = new QVBoxLayout();
+    
+    // glWidget
+    auto *glWidget = new GLRoverWidget();
+    glWidget->setMinimumSize(400, 400);
+    glWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // cameraWidget (z pełnym tłumaczeniem i jednym, poprawnym wywołaniem)
+    leftLayout->addWidget(glWidget);
+
+    // Przetłumaczony ukryty label kamery
     cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
-    cameraLabel->setMinimumSize(400, 300);
-    cameraLabel->setAlignment(Qt::AlignCenter);
-    cameraLabel->setStyleSheet(
-        "background-color: #000000; "
-        "color: white; "
-        "border: 3px solid #333333; "
-        "border-radius: 10px; "
-        "font-weight: bold;"
-    );
-    cameraLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    leftLayout->addWidget(cameraLabel);
+    cameraLabel->hide();
 
     leftLayout->addStretch();
+
     mainHLayout->addLayout(leftLayout, 60);
 
     auto *rightLayout = new QVBoxLayout();
     auto *topBar = new QHBoxLayout();
 
-    auto *title = new QLabel(LanguageManager::getInstance().translate("imu_title"), this);
-    title->setStyleSheet("font-size: 20px; font-weight: bold; color: #444;");
+    // Tytuł - przypisany do zmiennej klasowej (mainTitleLabel) zamiast lokalnej
+    mainTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_title"), this);
+    mainTitleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #EEEEEE;");
 
     // battery
     batteryIcon = new BatteryWidget(this);
 
     batteryLabel = new QLabel("12.4", this);
     batteryLabel->setFixedSize(50, 25); 
-    batteryLabel->setStyleSheet("background: #222; color: #00FF00; border-radius: 3px; "
-                                "font-family: Monospace; font-size: 14px; font-weight: bold;");
+    batteryLabel->setStyleSheet("background: #333; color: #00FF00; border: 1px solid #666; border-radius: 3px; "
+                                "font-family: Monospace; font-size: 15px; font-weight: bold;");
     batteryLabel->setAlignment(Qt::AlignCenter);
 
     auto *batteryUnit = new QLabel("V", this);
-    batteryUnit->setStyleSheet("font-size: 14px; font-weight: bold; color: #555;");
+    batteryUnit->setStyleSheet("font-size: 15px; font-weight: bold; color: #CCCCCC;");
     batteryUnit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 
-    topBar->addWidget(title);
+    topBar->addWidget(mainTitleLabel); // Używamy nowej zmiennej
     topBar->addStretch();
     topBar->addWidget(batteryIcon);
     topBar->addWidget(batteryLabel);
@@ -58,60 +56,60 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     rightLayout->addLayout(topBar);
     rightLayout->addSpacing(20);
 
-    // Wspólny styl dla okienek z wartościami (dodano font-size: 14px)
-    QString valueStyle = "background-color: white; color: black; border: 1px solid #aaa; padding: 2px; font-size: 14px;";
+    // Wspólny styl dla okienek z wartościami
+    QString valueStyle = "background-color: white; color: black; border: 1px solid #aaa; padding: 2px;";
 
-    // pose
+    // pose 
     poseTitle = new QLabel(LanguageManager::getInstance().translate("imu_pose_title"), this);
-    poseTitle->setStyleSheet("color: #2980b9; font-weight: bold; font-size: 15px;"); 
+    poseTitle->setStyleSheet("color: #2980b9; font-weight: bold; font-size: 18px;"); 
     poseTitle->setAlignment(Qt::AlignLeft);
     rightLayout->addWidget(poseTitle);
 
     auto *poseGrid = new QGridLayout();
     poseGrid->setSpacing(5); 
 
-    // x
-    auto *xTitle = new QLabel(LanguageManager::getInstance().translate("imu_x_label") + ":", this);
-    xTitle->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    // x (zmienna klasowa xTitleLabel)
+    xTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_x_label") + ":", this);
+    xTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
     xLabel = new QLabel("0.0", this); 
     xLabel->setStyleSheet(valueStyle);
     xLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    xLabel->setMinimumWidth(60);
+    xLabel->setFixedWidth(80); 
     
     auto *xUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_meters"), this);
 
-    poseGrid->addWidget(xTitle, 0, 0);
+    poseGrid->addWidget(xTitleLabel, 0, 0); // Używamy nowej zmiennej
     poseGrid->addWidget(xLabel, 0, 1);
     poseGrid->addWidget(xUnit, 0, 2);
 
-    // y
-    auto *yTitle = new QLabel(LanguageManager::getInstance().translate("imu_y_label") + ":", this);
-    yTitle->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    // y (zmienna klasowa yTitleLabel)
+    yTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_y_label") + ":", this);
+    yTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
     yLabel = new QLabel("0.0", this);
     yLabel->setStyleSheet(valueStyle);
     yLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    yLabel->setMinimumWidth(60); 
+    yLabel->setFixedWidth(80); 
     
     auto *yUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_meters"), this);
 
-    poseGrid->addWidget(yTitle, 1, 0);
+    poseGrid->addWidget(yTitleLabel, 1, 0); // Używamy nowej zmiennej
     poseGrid->addWidget(yLabel, 1, 1);
     poseGrid->addWidget(yUnit, 1, 2);
 
-    // yaw
-    auto *yawTitle = new QLabel(LanguageManager::getInstance().translate("imu_yaw_label") + ":", this);
-    yawTitle->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    // yaw (zmienna klasowa yawTitleLabel)
+    yawTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_yaw_label") + ":", this);
+    yawTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
     yawLabel = new QLabel("0.0", this);
     yawLabel->setStyleSheet(valueStyle);
     yawLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    yawLabel->setMinimumWidth(60);
+    yawLabel->setFixedWidth(80);
     
     auto *yawUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_degrees"), this);
 
-    poseGrid->addWidget(yawTitle, 2, 0);
+    poseGrid->addWidget(yawTitleLabel, 2, 0); // Używamy nowej zmiennej
     poseGrid->addWidget(yawLabel, 2, 1);
     poseGrid->addWidget(yawUnit, 2, 2);
 
@@ -125,40 +123,40 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     // velocity
     velTitle = new QLabel(LanguageManager::getInstance().translate("imu_velocity_title"), this);
-    velTitle->setStyleSheet("color: #c0392b; font-weight: bold; font-size: 15px;");
+    velTitle->setStyleSheet("color: #c0392b; font-weight: bold; font-size: 18px;");
     velTitle->setAlignment(Qt::AlignLeft); 
     rightLayout->addWidget(velTitle);
 
     auto *velGrid = new QGridLayout();
     velGrid->setSpacing(5);
 
-    // linear
-    auto *linTitle = new QLabel(LanguageManager::getInstance().translate("imu_linear_vel") + ":", this);
-    linTitle->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    // linear (zmienna klasowa linTitleLabel)
+    linTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_linear_vel") + ":", this);
+    linTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
     linearVelLabel = new QLabel("0.0", this);
     linearVelLabel->setStyleSheet(valueStyle);
     linearVelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    linearVelLabel->setMinimumWidth(60); 
+    linearVelLabel->setFixedWidth(80); 
     
     auto *linUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_ms"), this);
 
-    velGrid->addWidget(linTitle, 0, 0);
+    velGrid->addWidget(linTitleLabel, 0, 0); // Używamy nowej zmiennej
     velGrid->addWidget(linearVelLabel, 0, 1);
     velGrid->addWidget(linUnit, 0, 2);
 
-    // angular
-    auto *angTitle = new QLabel(LanguageManager::getInstance().translate("imu_angular_vel") + ":", this);
-    angTitle->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    // angular (zmienna klasowa angTitleLabel)
+    angTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_angular_vel") + ":", this);
+    angTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
     angularVelLabel = new QLabel("0.0", this);
     angularVelLabel->setStyleSheet(valueStyle);
     angularVelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    angularVelLabel->setMinimumWidth(60); 
+    angularVelLabel->setFixedWidth(80); 
     
     auto *angUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_degps"), this);
 
-    velGrid->addWidget(angTitle, 1, 0);
+    velGrid->addWidget(angTitleLabel, 1, 0); // Używamy nowej zmiennej
     velGrid->addWidget(angularVelLabel, 1, 1);
     velGrid->addWidget(angUnit, 1, 2);
 
@@ -166,6 +164,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     velHBox->addStretch();
     velHBox->addLayout(velGrid);
     velHBox->addStretch();
+    rightLayout->addLayout(velHBox);
 
     rightLayout->addStretch();
 
@@ -231,13 +230,22 @@ void ImuPage::setRosNode(RosNode *node) {
 }
 
 void ImuPage::refreshLanguage() {
-    // Update title labels
+    // 1. Główne tytuły sekcji i obraz z kamery
     poseTitle->setText(LanguageManager::getInstance().translate("imu_pose_title"));
     velTitle->setText(LanguageManager::getInstance().translate("imu_velocity_title"));
     cameraLabel->setText(LanguageManager::getInstance().translate("imu_camera_waiting"));
+    mainTitleLabel->setText(LanguageManager::getInstance().translate("imu_title"));
     
-    // Update odom labels with fresh translations
-    // TODO: Store last odom state to refresh display with new language
+    // 2. Etykiety osi i prędkości (dodajemy też dwukropek z powrotem, żeby ładnie wyglądało)
+    xTitleLabel->setText(LanguageManager::getInstance().translate("imu_x_label") + ":");
+    yTitleLabel->setText(LanguageManager::getInstance().translate("imu_y_label") + ":");
+    yawTitleLabel->setText(LanguageManager::getInstance().translate("imu_yaw_label") + ":");
+    
+    linTitleLabel->setText(LanguageManager::getInstance().translate("imu_linear_vel") + ":");
+    angTitleLabel->setText(LanguageManager::getInstance().translate("imu_angular_vel") + ":");
+
+    // TODO: Jeśli chcesz w przyszłości odświeżać inne dane (np. jednostki), 
+    // trzeba będzie dodać je do pliku .hpp w podobny sposób.
 }
 
 void ImuPage::updateLabels() {

@@ -152,4 +152,8 @@ compile_commands.json
 .history
 .ionide
 
+
+# doxy.log
+*log
+
 # End of https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode,c++,qt,qtcreator

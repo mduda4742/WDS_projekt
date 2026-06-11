@@ -27,7 +27,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     
     
     // cameraWidget
-    cameraLabel = new QLabel("OCZEKIWANIE NA OBRAZ...", this);
+    cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
     cameraLabel->setMinimumSize(400, 300);
 
     cameraLabel->setAlignment(Qt::AlignCenter);
@@ -50,7 +50,6 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *rightLayout = new QVBoxLayout();
     auto *topBar = new QHBoxLayout();
 
-    // Tytuł - przypisany do zmiennej klasowej (mainTitleLabel) zamiast lokalnej
     mainTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_title"), this);
     mainTitleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #EEEEEE;");
 
@@ -67,7 +66,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     batteryUnit->setStyleSheet("font-size: 15px; font-weight: bold; color: #CCCCCC;");
     batteryUnit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 
-    topBar->addWidget(mainTitleLabel); // Używamy nowej zmiennej
+    topBar->addWidget(mainTitleLabel); 
     topBar->addStretch();
     topBar->addWidget(batteryIcon);
     topBar->addWidget(batteryLabel);
@@ -76,7 +75,6 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     rightLayout->addLayout(topBar);
     rightLayout->addSpacing(20);
 
-    // Wspólny styl dla okienek z wartościami
     QString valueStyle = "background-color: white; color: black; border: 1px solid #aaa; padding: 2px;";
 
     // pose 
@@ -88,7 +86,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *poseGrid = new QGridLayout();
     poseGrid->setSpacing(5); 
 
-    // x (zmienna klasowa xTitleLabel)
+    // x 
     xTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_x_label") + ":", this);
     xTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
@@ -99,11 +97,11 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     
     auto *xUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_meters"), this);
 
-    poseGrid->addWidget(xTitleLabel, 0, 0); // Używamy nowej zmiennej
+    poseGrid->addWidget(xTitleLabel, 0, 0); 
     poseGrid->addWidget(xLabel, 0, 1);
     poseGrid->addWidget(xUnit, 0, 2);
 
-    // y (zmienna klasowa yTitleLabel)
+    // y 
     yTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_y_label") + ":", this);
     yTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
@@ -114,11 +112,11 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     
     auto *yUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_meters"), this);
 
-    poseGrid->addWidget(yTitleLabel, 1, 0); // Używamy nowej zmiennej
+    poseGrid->addWidget(yTitleLabel, 1, 0); 
     poseGrid->addWidget(yLabel, 1, 1);
     poseGrid->addWidget(yUnit, 1, 2);
 
-    // yaw (zmienna klasowa yawTitleLabel)
+    // yaw 
     yawTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_yaw_label") + ":", this);
     yawTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
@@ -129,7 +127,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     
     auto *yawUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_degrees"), this);
 
-    poseGrid->addWidget(yawTitleLabel, 2, 0); // Używamy nowej zmiennej
+    poseGrid->addWidget(yawTitleLabel, 2, 0); 
     poseGrid->addWidget(yawLabel, 2, 1);
     poseGrid->addWidget(yawUnit, 2, 2);
 
@@ -150,7 +148,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     auto *velGrid = new QGridLayout();
     velGrid->setSpacing(5);
 
-    // linear (zmienna klasowa linTitleLabel)
+    // linear 
     linTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_linear_vel") + ":", this);
     linTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
@@ -161,11 +159,11 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     
     auto *linUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_ms"), this);
 
-    velGrid->addWidget(linTitleLabel, 0, 0); // Używamy nowej zmiennej
+    velGrid->addWidget(linTitleLabel, 0, 0); 
     velGrid->addWidget(linearVelLabel, 0, 1);
     velGrid->addWidget(linUnit, 0, 2);
 
-    // angular (zmienna klasowa angTitleLabel)
+    // angular 
     angTitleLabel = new QLabel(LanguageManager::getInstance().translate("imu_angular_vel") + ":", this);
     angTitleLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     
@@ -176,7 +174,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     
     auto *angUnit = new QLabel(LanguageManager::getInstance().translate("imu_unit_degps"), this);
 
-    velGrid->addWidget(angTitleLabel, 1, 0); // Używamy nowej zmiennej
+    velGrid->addWidget(angTitleLabel, 1, 0); 
     velGrid->addWidget(angularVelLabel, 1, 1);
     velGrid->addWidget(angUnit, 1, 2);
 
@@ -199,8 +197,6 @@ void ImuPage::updateOdom(odomState state) {
     double yaw_deg = state.yaw * (180.0 / M_PI);
     double angular_vel_deg = state.angular_vel * (180.0 / M_PI);
 
-    // Ponieważ UI używa teraz oddzielnych etykiet na tekst i jednostki, 
-    // tutaj wstawiamy tylko same wartości liczbowe.
     xLabel->setText(QString::number(state.x, 'f', 1));
     yLabel->setText(QString::number(state.y, 'f', 1));
     yawLabel->setText(QString::number(yaw_deg, 'f', 1));
@@ -250,13 +246,11 @@ void ImuPage::setRosNode(RosNode *node) {
 }
 
 void ImuPage::refreshLanguage() {
-    // 1. Główne tytuły sekcji i obraz z kamery
     poseTitle->setText(LanguageManager::getInstance().translate("imu_pose_title"));
     velTitle->setText(LanguageManager::getInstance().translate("imu_velocity_title"));
     cameraLabel->setText(LanguageManager::getInstance().translate("imu_camera_waiting"));
     mainTitleLabel->setText(LanguageManager::getInstance().translate("imu_title"));
     
-    // 2. Etykiety osi i prędkości (dodajemy też dwukropek z powrotem, żeby ładnie wyglądało)
     xTitleLabel->setText(LanguageManager::getInstance().translate("imu_x_label") + ":");
     yTitleLabel->setText(LanguageManager::getInstance().translate("imu_y_label") + ":");
     yawTitleLabel->setText(LanguageManager::getInstance().translate("imu_yaw_label") + ":");
@@ -264,8 +258,6 @@ void ImuPage::refreshLanguage() {
     linTitleLabel->setText(LanguageManager::getInstance().translate("imu_linear_vel") + ":");
     angTitleLabel->setText(LanguageManager::getInstance().translate("imu_angular_vel") + ":");
 
-    // TODO: Jeśli chcesz w przyszłości odświeżać inne dane (np. jednostki), 
-    // trzeba będzie dodać je do pliku .hpp w podobny sposób.
 }
 
 void ImuPage::updateLabels() {

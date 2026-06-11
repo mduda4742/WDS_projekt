@@ -197,14 +197,6 @@ SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr) {
 }
 
 /**
- * @brief Create and configure 3x3 gamepad-style button grid for directional movement.
- * 
- * Buttons change from green to orange when pressed for visual feedback.
- * Each button is connected to its corresponding movement handler slot.
- * 
- * @param layout Grid layout to add buttons to
- */
-/**
  * @brief Forward LIDAR scan data to MapWidget for visualization.
  * 
  * @param ranges Vector of distance measurements in meters

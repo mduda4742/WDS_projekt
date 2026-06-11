@@ -34,7 +34,7 @@ static const char *fragmentShaderSource =
     "   float diff = max(dot(normal, lightDir), 0.2);\n"
     "   \n"
     "   // 4. Mieszamy kolor pomarańczowy ze światłem\n"
-    "   vec3 baseColor = vec3(1.0, 0.5, 0.2);\n"
+    "   vec3 baseColor = vec3(1.0, 0.6, 0.8);\n"
     "   vec3 finalColor = baseColor * diff;\n"
     "   \n"
     "   fragColor = vec4(finalColor, 1.0);\n"

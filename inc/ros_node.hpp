@@ -145,7 +145,7 @@ private:
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;             ///< Subscription for robot odometry data
     rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr battery_sub_;           ///< Subscription for battery voltage readings
     rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr image_sub_;  ///< Subscription for compressed camera images
-    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;         ///< Subscription for LIDAR laser scan data
+    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;        ///< Subscription for LIDAR laser scan data
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;                 ///< Subscription for global SLAM path data
 
     // ROS 2 Publisher

@@ -62,12 +62,12 @@ public slots:
     void updateCameraImage(const QImage &img);
 
 private:
-    QLabel *xLabel;           /**< Label displaying the X-coordinate [m]. */
-    QLabel *yLabel;           /**< Label displaying the Y-coordinate [m]. */
-    QLabel *yawLabel;         /**< Label displaying the orientation (Yaw) [deg]. */
+    QLabel *xLabel;                 /**< Label displaying the X-coordinate [m]. */
+    QLabel *yLabel;                 /**< Label displaying the Y-coordinate [m]. */
+    QLabel *yawLabel;               /**< Label displaying the orientation (Yaw) [deg]. */
 
-    QLabel *linearVelLabel;   /**< Label displaying forward linear velocity [m/s]. */
-    QLabel *angularVelLabel;  /**< Label displaying rotational velocity [deg/s]. */
+    QLabel *linearVelLabel;         /**< Label displaying forward linear velocity [m/s]. */
+    QLabel *angularVelLabel;        /**< Label displaying rotational velocity [deg/s]. */
 
     QLabel *batteryLabel;           /**< Label displaying the averaged battery voltage. */
 

@@ -45,7 +45,7 @@ GLRoverWidget::GLRoverWidget(QWidget *parent)
       m_program(nullptr),
       m_xRot(30.0f),
       m_yRot(-45.0f),
-      m_zoom(5.0f),
+      m_zoom(10.0f),
       m_targetX(0.0f), m_targetY(0.0f), m_targetZ(0.0f),
       m_vertexCount(0) {}
 
@@ -60,7 +60,7 @@ GLRoverWidget::~GLRoverWidget() {
 void GLRoverWidget::resetCamera() {
     m_xRot = 30.0f;
     m_yRot = -45.0f;
-    m_zoom = 5.0f;
+    m_zoom = 10.0f;
     m_targetX = 0.0f; m_targetY = 0.0f; m_targetZ = 0.0f;
     update();
 }
@@ -91,9 +91,7 @@ void GLRoverWidget::initializeGL() {
     m_vbo.bind();
 
     // loadDummyData();
-
-    // loadOBJ("/home/mduda/repos/WDS_projekt/leoRoverCad.mtl.obj");
-    loadOBJ("/home/mduda/repos/WDS_projekt/leoRoverCadFull.obj");
+    loadOBJ("../model/model_reduced.obj");
 
     m_program->enableAttributeArray(0);
     m_program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 3 * sizeof(float));

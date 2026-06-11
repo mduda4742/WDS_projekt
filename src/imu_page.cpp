@@ -12,6 +12,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     auto *leftLayout = new QVBoxLayout();
     
+    /*
     // glWidget
     auto *glWidget = new GLRoverWidget();
     glWidget->setMinimumSize(400, 400);
@@ -22,6 +23,25 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
     // Przetłumaczony ukryty label kamery
     cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
     cameraLabel->hide();
+    */
+    
+    
+    // cameraWidget
+    cameraLabel = new QLabel("OCZEKIWANIE NA OBRAZ...", this);
+    cameraLabel->setMinimumSize(400, 300);
+
+    cameraLabel->setAlignment(Qt::AlignCenter);
+
+    cameraLabel->setStyleSheet(
+        "background-color: #000000; "
+        "color: #555555; "
+        "border: 3px solid #333333; "
+        "border-radius: 10px; "
+        "font-weight: bold;"
+        );
+
+    cameraLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    leftLayout->addWidget(cameraLabel);
 
     leftLayout->addStretch();
 

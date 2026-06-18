@@ -43,7 +43,7 @@ void LanguageManager::initializeTranslations() {
     
     // ===== HOME PAGE =====
     translations_["home_welcome_title"] = 
-        {"Welcome to the WDS Project Home Page!", "Witamy na stronie głównej projektu WDS!"};
+        {"Welcome to the LeoDash Project Home Page!", "Witamy na stronie głównej projektu LeoDash!"};
     
     translations_["home_subtitle"] = 
         {"Authors: Radosław Mijał & Mateusz Duda", "Autorzy: Radosław Mijał & Mateusz Duda"};

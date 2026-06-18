@@ -51,7 +51,7 @@ private:
     double current_vx = 0.0;           ///< Current active target linear velocity [m/s].
     double current_vth = 0.0;          ///< Current active target angular velocity [rad/s].
 
-    const double linear_speed_ = 0.5;  ///< Constant baseline forward/backward speed multiplier [m/s].
+    const double linear_speed_ = 0.4;  ///< Constant baseline forward/backward speed multiplier [m/s].
     const double angular_speed_ = 1.0; ///< Constant baseline rotational speed multiplier [rad/s].
 };
 

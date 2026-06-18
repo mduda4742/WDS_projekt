@@ -13,7 +13,6 @@ set(CMAKE_AUTORCC ON)
 
 # Find Qt6 libraries
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui OpenGL OpenGLWidgets)
-find_package(OpenGL REQUIRED)
 
 # Find ROS 2 libraries
 find_package(rclcpp REQUIRED)
@@ -40,12 +39,14 @@ set(SOURCES
     src/control_pad_widget.cpp
     src/language_manager.cpp
     src/view_25d_widget.cpp
+    src/gl_rover_widget.cpp
     inc/window.hpp
     inc/slam_page.hpp
     inc/imu_page.hpp
     inc/ros_node.hpp 
     inc/battery_widget.hpp
     inc/control_pad_widget.hpp
+    inc/gl_rover_widget.hpp
     inc/odomState.hpp
     inc/language_manager.hpp
     inc/view_25d_widget.hpp

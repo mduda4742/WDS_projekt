@@ -68,7 +68,7 @@ void LanguageManager::initializeTranslations() {
         {"Language:", "Język:"};
     
     translations_["home_english_button"] = 
-        {"English", "English"};
+        {"English", "Angielski"};
     
     translations_["home_polish_button"] = 
         {"Polish", "Polski"};

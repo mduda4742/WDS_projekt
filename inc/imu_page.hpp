@@ -15,8 +15,7 @@
 /**
  * @class ImuPage
  * @brief Widget class that displays real-time telemetry data.
- * 
- * The ImuPage provides a graphical interface to show the data processed
+ * * The ImuPage provides a graphical interface to show the data processed
  * by the RosNode. It receives updates via slots and formats them into
  * human-readable text labels.
  */
@@ -78,19 +77,29 @@ public slots:
     void refreshLanguage();
 
 private:
-    QLabel *xLabel;           /**< Label displaying the X-coordinate [m]. */
-    QLabel *yLabel;           /**< Label displaying the Y-coordinate [m]. */
-    QLabel *yawLabel;         /**< Label displaying the orientation (Yaw) [deg]. */
+    QLabel *xLabel;                 /**< Label displaying the X-coordinate [m]. */
+    QLabel *yLabel;                 /**< Label displaying the Y-coordinate [m]. */
+    QLabel *yawLabel;               /**< Label displaying the orientation (Yaw) [deg]. */
 
-    QLabel *linearVelLabel;   /**< Label displaying forward linear velocity [m/s]. */
-    QLabel *angularVelLabel;  /**< Label displaying rotational velocity [deg/s]. */
+    QLabel *linearVelLabel;         /**< Label displaying forward linear velocity [m/s]. */
+    QLabel *angularVelLabel;        /**< Label displaying rotational velocity [deg/s]. */
 
     QLabel *batteryLabel;           /**< Label displaying the averaged battery voltage. */
+    QLabel *cameraLabel;            /**< Label for displaying the camera feed as an image. */
 
     View25DWidget *view25d;         /**< OpenGL widget for 2.5D environment visualization. */
     
-    QLabel *poseTitle;        /**< Title label for pose section */
-    QLabel *velTitle;         /**< Title label for velocity section */
+    QLabel *mainTitleLabel;         /**< Main title label (LEO SYSTEM). */
+    
+    QLabel *poseTitle;              /**< Title label for pose section. */
+    QLabel *velTitle;               /**< Title label for velocity section. */
+    
+    QLabel *xTitleLabel;            /**< Title label for X axis. */
+    QLabel *yTitleLabel;            /**< Title label for Y axis. */
+    QLabel *yawTitleLabel;          /**< Title label for Yaw axis. */
+    
+    QLabel *linTitleLabel;          /**< Title label for Linear velocity. */
+    QLabel *angTitleLabel;          /**< Title label for Angular velocity. */
 
     BatteryWidget *batteryIcon;     /**< Custom widget representing the battery visually. */
     ControlPadWidget *controlPad;   /**< Custom widget for manual robot control. */

@@ -4,6 +4,11 @@
 #include <thread>
 #include "odomState.hpp"
 
+// xdg-open html/index.html 
+// xhost +local:root
+// docker compose run --rm dev_environment bash
+
+
 int main(int argc, char *argv[]) {
     // Initialize ROS 2
     rclcpp::init(argc, argv);

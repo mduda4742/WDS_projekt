@@ -12,7 +12,7 @@ Window::Window(QWidget *parent) : QMainWindow(parent), homeTitle(nullptr), homeS
     showFullScreen();
 
     // Apply global dark theme with white, much larger text
-    setStyleSheet("QWidget { background-color: #222222; color: white; font-size: 28px; }"
+    setStyleSheet("QWidget { background-color: #222222; color: white; font-size: 15px; }"
                   "QTabWidget::pane { border: 1px solid #444; }"
                   "QTabBar::tab { background: #333; padding: 12px 24px; }"
                   "QTabBar::tab:selected { background: #555; }");
@@ -84,12 +84,12 @@ QWidget* Window::createHomePage() {
     auto *bottomLayout = new QHBoxLayout();
     bottomLayout->addStretch();
     
-    auto *langLabel = new QLabel(LanguageManager::getInstance().translate("home_language_label"), page);
+    langLabel = new QLabel(LanguageManager::getInstance().translate("home_language_label"), page);
     
-    auto *englishBtn = new QPushButton(LanguageManager::getInstance().translate("home_english_button"), page);
+    englishBtn = new QPushButton(LanguageManager::getInstance().translate("home_english_button"), page);
     englishBtn->setMaximumWidth(150);
     
-    auto *polishBtn = new QPushButton(LanguageManager::getInstance().translate("home_polish_button"), page);
+    polishBtn = new QPushButton(LanguageManager::getInstance().translate("home_polish_button"), page);
     polishBtn->setMaximumWidth(150);
     
     connect(englishBtn, &QPushButton::clicked, [this]() {
@@ -163,6 +163,15 @@ void Window::refreshLanguage() {
     }
     if (homeInfoLabel) {
         homeInfoLabel->setText(LanguageManager::getInstance().translate("home_info_text"));
+    }
+    if (langLabel) {
+        langLabel->setText(LanguageManager::getInstance().translate("home_language_label"));
+    }
+    if (englishBtn) {
+        englishBtn->setText(LanguageManager::getInstance().translate("home_english_button"));
+    }
+    if (polishBtn) {
+        polishBtn->setText(LanguageManager::getInstance().translate("home_polish_button"));
     }
     
     // Notify child pages to refresh their text

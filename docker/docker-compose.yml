@@ -1,0 +1,27 @@
+services:
+  dev_environment:
+    # budowa obrazu na podstawie Dockerfile
+    build: 
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: projekt_qt_ros
+    container_name: dev_container
+
+    tty: true
+    stdin_open: true
+    command: ["/bin/bash"]
+
+    network_mode: host
+    ipc: host
+
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+
+    volumes:
+      - ..:/workspace
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+    devices: 
+      - /dev/dri:/dev/dri

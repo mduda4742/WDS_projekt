@@ -10,8 +10,8 @@ ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
     setStyleSheet("border: 1px solid black; background-color: transparent;");
 
     auto *layout = new QGridLayout(this);
-    layout->setSpacing(3);               // Odstępy między przyciskami
-    layout->setContentsMargins(5, 5, 5, 5); // Marginesy wewnętrzne panelu
+    layout->setSpacing(3);              
+    layout->setContentsMargins(5, 5, 5, 5); 
 
     publishTimer = new QTimer(this);
     connect(publishTimer, &QTimer::timeout, this, &ControlPadWidget::sendVelocityCommand);
@@ -48,13 +48,11 @@ ControlPadWidget::ControlPadWidget(QWidget *parent) : QWidget(parent) {
         btn->setFixedSize(60, 60);
         btn->setStyleSheet(buttonStyle);
 
-        // Przechowujemy wartości prędkości wewnątrz przycisku
         btn->setProperty("vx", d.v_lin * linear_speed_);
         btn->setProperty("vth", d.v_ang * angular_speed_);
 
         layout->addWidget(btn, d.row, d.col);
 
-        // Łączymy sygnały
         connect(btn, &QPushButton::pressed, this, &ControlPadWidget::onButtonPressed);
         connect(btn, &QPushButton::released, this, &ControlPadWidget::onButtonReleased);
     }

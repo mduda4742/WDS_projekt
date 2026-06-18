@@ -15,7 +15,6 @@ latex/
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -77,7 +76,6 @@ qrc_*.cpp
 ui_*.h
 *.qmlc
 *.jsc
-Makefile*
 *build-*
 *.qm
 *.prl
@@ -153,5 +151,9 @@ compile_commands.json
 # Ignore all local history of files
 .history
 .ionide
+
+
+# doxy.log
+*log
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode,c++,qt,qtcreator

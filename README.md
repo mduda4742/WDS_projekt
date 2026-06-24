@@ -16,18 +16,16 @@ This project is a graphical user interface (GUI) application built with **C++**,
 
 ## Screenshots
 
-*Add your project screenshots here by replacing the placeholder image paths with the actual paths to your photos.*
-
 ### Home Page
-!Home Screen Placeholder
+![Home Page Screenshot](images/home.png)
 > *The main welcome screen featuring the language selection and application introduction.*
 
 ### SLAM View
-!SLAM View Placeholder
+![SLAM Page Screenshot](images/slam.png)
 > *Real-time LIDAR point cloud visualization, SLAM path tracking, and movement controls.*
 
 ### IMU & Telemetry View
-!IMU View Placeholder
+![IMU Page Screenshot](images/imu.png)
 > *Live display of odometry data, battery level, camera feed, and the 2.5D/3D visualization view.*
 
 ## Prerequisites

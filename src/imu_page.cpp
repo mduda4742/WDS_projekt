@@ -293,7 +293,3 @@ void ImuPage::refreshLanguage() {
     linTitleLabel->setText(LanguageManager::getInstance().translate("imu_linear_vel") + ":");
     angTitleLabel->setText(LanguageManager::getInstance().translate("imu_angular_vel") + ":");
 }
-
-void ImuPage::updateLabels() {
-    // TODO: Implement label updates for dynamic translation
-}

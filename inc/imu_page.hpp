@@ -107,10 +107,6 @@ private:
     
     RosNode *ros_node_ = nullptr;   /**< Pointer to the underlying ROS 2 node communications manager. */
     
-    /**
-     * @brief Update displayed text with labels
-     */
-    void updateLabels();
 };
 
 #endif

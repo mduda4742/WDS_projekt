@@ -35,17 +35,10 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
         std::bind(&RosNode::laserScanCallback, this, _1)
     );
 
-    
     path_sub_ = this->create_subscription<nav_msgs::msg::Path>(
         "/path",
         10,
         std::bind(&RosNode::pathCallback, this, _1)
-    );
-
-    odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
-        "merged_odom",
-        10,
-        std::bind(&RosNode::odomCallback, this, _1)
     );
     
     cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(

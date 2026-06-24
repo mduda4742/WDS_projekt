@@ -21,15 +21,13 @@
  * @brief Main ROS 2 node class that integrates with Qt. This node subscribes to sensor topics
  * (odometry, LIDAR, camera, battery, and SLAM path) and emits Qt signals when new data is received.
  * It also publishes velocity commands to control the robot.
- * 
- * Subscriptions:
+ * * Subscriptions:
  * - /odom: Robot odometry data (nav_msgs/msg/Odometry)
  * - /battery_voltage: Battery voltage status (std_msgs/msg/Float32)
  * - /camera/image_color/compressed: Camera image data (sensor_msgs/msg/CompressedImage)
  * - /scan: LIDAR laser scan data (sensor_msgs/msg/LaserScan)
  * - /plan: Global path from SLAM/navigation (nav_msgs/msg/Path)
- * 
- * Publications:
+ * * Publications:
  * - /cmd_vel: Robot velocity commands (geometry_msgs/msg/Twist)
  */
 
@@ -51,44 +49,44 @@ signals:
 
     /**
     * @brief Signal emitted when new odometry data is processed.
-    * @param odom - the processed state containing x, y, yaw, and velocities (linear x and angular z).
+    * @param[in] odom - the processed state containing x, y, yaw, and velocities (linear x and angular z).
     */
     void odomReceived(odomState odom);
 
     /**
     * @brief Signal emitted when a new battery voltage reading is received.
-    * @param voltage - the battery voltage in Volts [V].
+    * @param[in] voltage - the battery voltage in Volts [V].
     */
     void batteryReceived(double voltage);
 
     /**
      * @brief Signal emitted when a new camera image is received and processed.
-     * @param image - the processed image as a QImage, ready for GUI rendering.
+     * @param[in] image - the processed image as a QImage, ready for GUI rendering.
      */
     void imageReceived(const QImage &image);
     
     /**
      * @brief Signal emitted when LIDAR scan data is received.
-     * @param ranges - vector of distance measurements in meters
-     * @param angle_min - minimum angle of scan in radians
-     * @param angle_max - maximum angle of scan in radians
-     * @param angle_increment - angular resolution of scan in radians
+     * @param[in] ranges - vector of distance measurements in meters
+     * @param[in] angle_min - minimum angle of scan in radians
+     * @param[in] angle_max - maximum angle of scan in radians
+     * @param[in] angle_increment - angular resolution of scan in radians
      */
     void laserScanReceived(const std::vector<float> &ranges, 
                           float angle_min, float angle_max, float angle_increment);
     
     /**
      * @brief Signal emitted when SLAM path data is received.
-     * @param path_x - vector of X coordinates along the path
-     * @param path_y - vector of Y coordinates along the path
+     * @param[in] path_x - vector of X coordinates along the path
+     * @param[in] path_y - vector of Y coordinates along the path
      */
     void pathReceived(const std::vector<double> &path_x, const std::vector<double> &path_y);
     
     /**
      * @brief Signal emitted when robot position is updated (from cmd_vel integration or odometry).
-     * @param x - robot X position in meters
-     * @param y - robot Y position in meters
-     * @param theta - robot orientation angle in radians
+     * @param[in] x - robot X position in meters
+     * @param[in] y - robot Y position in meters
+     * @param[in] theta - robot orientation angle in radians
      */
     void robotPoseReceived(double x, double y, double theta);
 
@@ -96,42 +94,42 @@ public:
     /**
      * @brief Publish velocity command to cmd_vel topic for robot movement control.
      * Creates and publishes a Twist message with linear and angular velocities.
-     * @param linear_x - forward /backward velocity in m/s (positive = forward)
-     * @param angular_z - rotation velocity in rad/s (positive = counter-clockwise)
+     * @param[in] linear_x - forward /backward velocity in m/s (positive = forward)
+     * @param[in] angular_z - rotation velocity in rad/s (positive = counter-clockwise)
      */
     void publishVelocity(double linear_x, double angular_z);
 
 private:
     /**
      * @brief Callback for the odometry subscription.
-     * @param msg - shared pointer to the incoming nav_msgs/Odometry message.
+     * @param[in] msg - shared pointer to the incoming nav_msgs/Odometry message.
      */
     void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
     /**
      * @brief Callback for the battery voltage subscription.
-     * @param msg - shared pointer to the incoming std_msgs/Float32 message.
+     * @param[in] msg - shared pointer to the incoming std_msgs/Float32 message.
      */
     void batteryCallback(const std_msgs::msg::Float32::SharedPtr msg);
 
     /**
      * @brief Callback function for the camera image subscription.
      * Converts the ROS message to a QImage format and emits the imageReceived signal.
-     * @param msg - shared pointer to the incoming sensor_msgs/CompressedImage message.
+     * @param[in] msg - shared pointer to the incoming sensor_msgs/CompressedImage message.
      */
     void imageCallback(const sensor_msgs::msg::CompressedImage::SharedPtr msg);
 
     /**
      * @brief Callback function for /scan subscription.
      * Extracts laser scan data and emits laserScanReceived signal for visualization.
-     * @param msg - the LaserScan message containing distance measurements
+     * @param[in] msg - the LaserScan message containing distance measurements
      */
     void laserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     
     /**
      * @brief Callback function for SLAM path subscription.
      * Extracts path poses and emits pathReceived signal for visualization.
-     * @param msg - the Path message containing a series of poses
+     * @param[in] msg - the Path message containing a series of poses
      */
     void pathCallback(const nav_msgs::msg::Path::SharedPtr msg);
     
@@ -157,4 +155,4 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;           ///< Publisher for robot velocity commands
 };
 
-#endif 
+#endif

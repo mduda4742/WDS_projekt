@@ -15,8 +15,7 @@ class RosNode;  // Forward declaration
 /**
  * @class MapWidget
  * @brief Custom QWidget that renders 2D LIDAR scan data with robot position visualization.
- * 
- * Displays a grid background, robot center marker, and LIDAR point cloud in real-time.
+ * * Displays a grid background, robot center marker, and LIDAR point cloud in real-time.
  * Uses polar-to-Cartesian coordinate conversion for visualization.
  */
 class MapWidget : public QWidget {
@@ -25,7 +24,7 @@ class MapWidget : public QWidget {
 public:
     /**
      * @brief Constructor for MapWidget. Initializes with black background and minimum size.
-     * @param parent Parent widget
+     * @param[in] parent - parent widget
      */
     explicit MapWidget(QWidget *parent = nullptr);
     virtual ~MapWidget() = default;
@@ -34,7 +33,7 @@ protected:
     /**
      * @brief Qt paint event handler. Draws grid, robot marker, and LIDAR data.
      * Called automatically when widget needs repainting.
-     * @param event The paint event
+     * @param[in] event - the paint event
      */
     void paintEvent(QPaintEvent *event) override;
 
@@ -42,10 +41,10 @@ public slots:
     /**
      * @brief Update the widget with new LIDAR scan data and trigger repaint.
      * Stores scan parameters and marks data as available for drawing.
-     * @param ranges Vector of distance measurements in meters
-     * @param angle_min Minimum scan angle in radians
-     * @param angle_max Maximum scan angle in radians
-     * @param angle_increment Angular resolution between measurements in radians
+     * @param[in] ranges - vector of distance measurements in meters
+     * @param[in] angle_min - minimum scan angle in radians
+     * @param[in] angle_max - maximum scan angle in radians
+     * @param[in] angle_increment - angular resolution between measurements in radians
      */
     void updateLaserScan(const std::vector<float> &ranges, 
                          float angle_min, float angle_max, float angle_increment);
@@ -53,21 +52,21 @@ public slots:
     /**
      * @brief Update the widget with SLAM path data and trigger repaint.
      * Stores the robot's traveled path for visualization.
-     * @param path_x Vector of X coordinates along the path
-     * @param path_y Vector of Y coordinates along the path
+     * @param[in] path_x - vector of X coordinates along the path
+     * @param[in] path_y - vector of Y coordinates along the path
      */
     void updatePath(const std::vector<double> &path_x, const std::vector<double> &path_y);
     
     /**
      * @brief Update the robot's pose on the map.
-     * @param x Robot's X coordinate in the map frame
-     * @param y Robot's Y coordinate in the map frame
-     * @param theta Robot's orientation (yaw) in the map frame
+     * @param[in] x - robot's X coordinate in the map frame
+     * @param[in] y - robot's Y coordinate in the map frame
+     * @param[in] theta - robot's orientation (yaw) in the map frame
      */
     void updateRobotPose(double x, double y, double theta);
 
 private:
-    std::vector<float> ranges_;      ///< LIDAR distance measurements
+    std::vector<float> ranges_;       ///< LIDAR distance measurements
     float angle_min_;                 ///< Minimum scan angle
     float angle_max_;                 ///< Maximum scan angle
     float angle_increment_;           ///< Angular resolution of scan
@@ -83,13 +82,13 @@ private:
     
     /**
      * @brief Convert polar LIDAR coordinates to Cartesian and draw points.
-     * @param painter Qt painter object for drawing
+     * @param[in,out] painter - Qt painter object for drawing. State is modified during drawing operations.
      */
     void drawLaserScan(QPainter &painter);
     
     /**
      * @brief Draw the SLAM path on the map.
-     * @param painter Qt painter object for drawing
+     * @param[in,out] painter - Qt painter object for drawing. State is modified during drawing operations.
      */
     void drawPath(QPainter &painter);
 };
@@ -97,8 +96,7 @@ private:
 /**
  * @class SlamPage
  * @brief SLAM (Simultaneous Localization and Mapping) visualization page.
- * 
- * Contains a MapWidget for 2D LIDAR visualization and a 3x3 gamepad control grid
+ * * Contains a MapWidget for 2D LIDAR visualization and a 3x3 gamepad control grid
  * for sending movement commands to the robot via cmd_vel topic.
  */
 class SlamPage : public QWidget {
@@ -107,7 +105,7 @@ class SlamPage : public QWidget {
 public:
     /**
      * @brief Constructor for SlamPage. Sets up layout with map display and control buttons.
-     * @param parent Parent widget
+     * @param[in] parent - parent widget
      */
     explicit SlamPage(QWidget *parent = nullptr);
     virtual ~SlamPage() = default;
@@ -115,7 +113,7 @@ public:
     /**
      * @brief Set the ROS node pointer for publishing velocity commands.
      * Must be called before using movement controls.
-     * @param node Pointer to RosNode instance
+     * @param[in] node - pointer to RosNode instance
      */
     void setRosNode(RosNode *node);
 
@@ -123,10 +121,10 @@ public slots:
     /**
      * @brief Receive and display LIDAR scan data on the map widget.
      * Forwards data to MapWidget for visualization.
-     * @param ranges Vector of distance measurements
-     * @param angle_min Minimum scan angle
-     * @param angle_max Maximum scan angle
-     * @param angle_increment Angular resolution
+     * @param[in] ranges - vector of distance measurements
+     * @param[in] angle_min - minimum scan angle
+     * @param[in] angle_max - maximum scan angle
+     * @param[in] angle_increment - angular resolution
      */
     void updateLaserData(const std::vector<float> &ranges, 
                         float angle_min, float angle_max, float angle_increment);
@@ -134,16 +132,16 @@ public slots:
     /**
      * @brief Receive and display SLAM path data on the map widget.
      * Forwards path data to MapWidget for visualization.
-     * @param path_x Vector of X coordinates along the path
-     * @param path_y Vector of Y coordinates along the path
+     * @param[in] path_x - vector of X coordinates along the path
+     * @param[in] path_y - vector of Y coordinates along the path
      */
     void updatePathData(const std::vector<double> &path_x, const std::vector<double> &path_y);
     
     /**
      * @brief Receive and forward robot pose data to the map widget.
-     * @param x Robot's X coordinate
-     * @param y Robot's Y coordinate
-     * @param theta Robot's orientation (yaw)
+     * @param[in] x - robot's X coordinate
+     * @param[in] y - robot's Y coordinate
+     * @param[in] theta - robot's orientation (yaw)
      */
     void updateRobotPose(double x, double y, double theta);
 

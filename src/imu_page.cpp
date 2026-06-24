@@ -5,6 +5,7 @@
 #include "gl_rover_widget.hpp"
 #include <cmath>
 #include <QVBoxLayout>
+#include <QStackedWidget>
 #include "ros_node.hpp"
 
 ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
@@ -12,7 +13,7 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     auto *leftLayout = new QVBoxLayout();
     
-    /*
+    /* 
     // glWidget
     auto *glWidget = new GLRoverWidget();
     glWidget->setMinimumSize(400, 400);
@@ -20,12 +21,12 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
 
     leftLayout->addWidget(glWidget);
 
-    // Przetłumaczony ukryty label kamery
     cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
     cameraLabel->hide();
     */
     
     
+    /*
     // cameraWidget
     cameraLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
     cameraLabel->setMinimumSize(400, 300);
@@ -41,7 +42,31 @@ ImuPage::ImuPage(QWidget *parent) : QWidget(parent) {
         );
 
     cameraLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    leftLayout->addWidget(cameraLabel);
+    leftLayout->addWidget(cameraLabel);     
+    */
+
+    QStackedWidget *cameraStack = new QStackedWidget(this);
+    cameraStack->setObjectName("CameraStack"); 
+    cameraStack->setMinimumSize(400, 300);
+    cameraStack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    QLabel *waitingLabel = new QLabel(LanguageManager::getInstance().translate("imu_camera_waiting"), this);
+    waitingLabel->setObjectName("WaitingLabel");
+    waitingLabel->setAlignment(Qt::AlignCenter);
+    waitingLabel->setStyleSheet(
+        "background-color: #000000; "
+        "color: #555555; "
+        "border: 3px solid #333333; "
+        "border-radius: 10px; "
+        "font-weight: bold;"
+    );
+
+    view25d = new View25DWidget(this);
+
+    cameraStack->addWidget(waitingLabel); 
+    cameraStack->addWidget(view25d);      
+
+    leftLayout->addWidget(cameraStack);
 
     leftLayout->addStretch();
 
@@ -226,6 +251,12 @@ void ImuPage::updateBattery(double voltage) {
 
 void ImuPage::updateCameraImage(const QImage &image) {
     if (!image.isNull() && view25d) {
+        
+        QStackedWidget *stack = this->findChild<QStackedWidget*>("CameraStack");
+        
+        if (stack && stack->currentIndex() == 0) {
+            stack->setCurrentIndex(1);
+        }
         view25d->updateImage(image);
     }
 }
@@ -248,16 +279,19 @@ void ImuPage::setRosNode(RosNode *node) {
 void ImuPage::refreshLanguage() {
     poseTitle->setText(LanguageManager::getInstance().translate("imu_pose_title"));
     velTitle->setText(LanguageManager::getInstance().translate("imu_velocity_title"));
-    cameraLabel->setText(LanguageManager::getInstance().translate("imu_camera_waiting"));
     mainTitleLabel->setText(LanguageManager::getInstance().translate("imu_title"));
     
+    QLabel *waitingLabel = this->findChild<QLabel*>("WaitingLabel"); 
+    if (waitingLabel) {
+        waitingLabel->setText(LanguageManager::getInstance().translate("imu_camera_waiting"));
+    }
+
     xTitleLabel->setText(LanguageManager::getInstance().translate("imu_x_label") + ":");
     yTitleLabel->setText(LanguageManager::getInstance().translate("imu_y_label") + ":");
     yawTitleLabel->setText(LanguageManager::getInstance().translate("imu_yaw_label") + ":");
     
     linTitleLabel->setText(LanguageManager::getInstance().translate("imu_linear_vel") + ":");
     angTitleLabel->setText(LanguageManager::getInstance().translate("imu_angular_vel") + ":");
-
 }
 
 void ImuPage::updateLabels() {

@@ -11,13 +11,11 @@ Window::Window(QWidget *parent) : QMainWindow(parent), homeTitle(nullptr), homeS
     setWindowTitle(LanguageManager::getInstance().translate("window_title"));
     showFullScreen();
 
-    // Apply global dark theme with white, much larger text
     setStyleSheet("QWidget { background-color: #222222; color: white; font-size: 15px; }"
                   "QTabWidget::pane { border: 1px solid #444; }"
                   "QTabBar::tab { background: #333; padding: 12px 24px; }"
                   "QTabBar::tab:selected { background: #555; }");
 
-    // Create window control buttons for the top right corner
     auto *cornerWidget = new QWidget(this);
     auto *cornerLayout = new QHBoxLayout(cornerWidget);
     cornerLayout->setContentsMargins(0, 0, 0, 0);
@@ -37,60 +35,73 @@ Window::Window(QWidget *parent) : QMainWindow(parent), homeTitle(nullptr), homeS
     cornerLayout->addWidget(adjBtn);
     cornerLayout->addWidget(closeBtn);
 
-    // Create tab widget to hold all pages
     tabWidget = new QTabWidget(this);
     tabWidget->setCornerWidget(cornerWidget, Qt::TopRightCorner);
     tabWidget->addTab(createHomePage(), LanguageManager::getInstance().translate("tab_home"));
     
-    // Create SLAM page for LIDAR visualization and movement controls
     slamPage = new SlamPage(this);
     tabWidget->addTab(slamPage, LanguageManager::getInstance().translate("tab_slam"));
     
-    // Create IMU page for sensor data display
     imuPage = new ImuPage(this);
     tabWidget->addTab(imuPage, LanguageManager::getInstance().translate("tab_imu"));
     
     setCentralWidget(tabWidget);
 
-    // Connect language changes to update UI
     connect(&LanguageManager::getInstance(), &LanguageManager::languageChanged,
             this, &Window::refreshLanguage);
 }
 
 QWidget* Window::createHomePage() {
     auto *page = new QWidget(this);
-    auto *mainLayout = new QVBoxLayout(page);
     
-    // Top section: Title and subtitle
-    auto *topLayout = new QVBoxLayout();
+    auto *mainLayout = new QVBoxLayout(page);
+    mainLayout->setContentsMargins(40, 40, 40, 30); 
+    
+    auto *contentLayout = new QHBoxLayout();
+    
+    auto *textLayout = new QVBoxLayout();
+    textLayout->setAlignment(Qt::AlignTop);
+    textLayout->setSpacing(25);
+    
     homeTitle = new QLabel("<h1>" + LanguageManager::getInstance().translate("home_welcome_title") + "</h1>", page);
-    homeTitle->setAlignment(Qt::AlignCenter);
+    homeTitle->setWordWrap(true); 
     
     homeSubtitle = new QLabel("<p>" + LanguageManager::getInstance().translate("home_subtitle") + "</p>", page);
-    homeSubtitle->setAlignment(Qt::AlignCenter);
+    homeSubtitle->setStyleSheet("color: #aaaaaa; font-size: 16px;");
+    homeSubtitle->setWordWrap(true);
 
-    topLayout->addWidget(homeTitle);
-    topLayout->addWidget(homeSubtitle);
-    
-    mainLayout->addLayout(topLayout);
-    
-    // Middle section: Info text area
     homeInfoLabel = new QLabel(LanguageManager::getInstance().translate("home_info_text"), page);
-    homeInfoLabel->setAlignment(Qt::AlignCenter);
-    homeInfoLabel->setStyleSheet("padding: 40px;");
-    mainLayout->addWidget(homeInfoLabel, 1);  // Stretch to fill available space
+    homeInfoLabel->setWordWrap(true);
+    homeInfoLabel->setStyleSheet("background-color: #2a2a2a; padding: 25px; border-radius: 10px; line-height: 1.5;");
     
-    // Bottom section: Language selector (bottom right corner)
+    textLayout->addWidget(homeTitle);
+    textLayout->addWidget(homeSubtitle);
+    textLayout->addSpacing(15); 
+    textLayout->addWidget(homeInfoLabel);
+    textLayout->addStretch();
+    
+    rovWidget = new GLRoverWidget(page); 
+    rovWidget->setMinimumSize(450, 450);
+    rovWidget->setStyleSheet("border: 1px solid #444; border-radius: 10px; background-color: #1a1a1a;");
+    
+    contentLayout->addLayout(textLayout, 1);
+    contentLayout->addSpacing(50);
+    contentLayout->addWidget(rovWidget, 1);
+    
+    mainLayout->addLayout(contentLayout, 1); 
+    
     auto *bottomLayout = new QHBoxLayout();
-    bottomLayout->addStretch();
+    bottomLayout->addStretch(); 
     
     langLabel = new QLabel(LanguageManager::getInstance().translate("home_language_label"), page);
     
     englishBtn = new QPushButton(LanguageManager::getInstance().translate("home_english_button"), page);
-    englishBtn->setMaximumWidth(150);
+    englishBtn->setFixedSize(120, 40); 
+    englishBtn->setStyleSheet("background-color: #333; border-radius: 5px;");
     
     polishBtn = new QPushButton(LanguageManager::getInstance().translate("home_polish_button"), page);
-    polishBtn->setMaximumWidth(150);
+    polishBtn->setFixedSize(120, 40);
+    polishBtn->setStyleSheet("background-color: #333; border-radius: 5px;");
     
     connect(englishBtn, &QPushButton::clicked, [this]() {
         LanguageManager::getInstance().setLanguage(Language::English);
@@ -101,9 +112,9 @@ QWidget* Window::createHomePage() {
     });
     
     bottomLayout->addWidget(langLabel);
+    bottomLayout->addSpacing(15); 
     bottomLayout->addWidget(englishBtn);
     bottomLayout->addWidget(polishBtn);
-    bottomLayout->addSpacing(10);  // Small margin from right edge
     
     mainLayout->addLayout(bottomLayout);
 
@@ -146,15 +157,12 @@ void Window::setRosNode(RosNode *node) {
 }
 
 void Window::refreshLanguage() {
-    // Update window title
     setWindowTitle(LanguageManager::getInstance().translate("window_title"));
     
-    // Update tab names
     tabWidget->setTabText(0, LanguageManager::getInstance().translate("tab_home"));
     tabWidget->setTabText(1, LanguageManager::getInstance().translate("tab_slam"));
     tabWidget->setTabText(2, LanguageManager::getInstance().translate("tab_imu"));
     
-    // Update home page text
     if (homeTitle) {
         homeTitle->setText("<h1>" + LanguageManager::getInstance().translate("home_welcome_title") + "</h1>");
     }
@@ -174,7 +182,6 @@ void Window::refreshLanguage() {
         polishBtn->setText(LanguageManager::getInstance().translate("home_polish_button"));
     }
     
-    // Notify child pages to refresh their text
     if (slamPage) {
         slamPage->refreshLanguage();
     }

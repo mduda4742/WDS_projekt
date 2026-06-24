@@ -17,7 +17,8 @@
 /**
  * @class GLRoverWidget
  * @brief Widget for 3D visualization of the rover using OpenGL.
- * * This class provides a graphical viewport to render the 3D model 
+ *
+ * This class provides a graphical viewport to render the 3D model 
  * of the rover. It handles basic camera controls like rotation and zoom.
  */
 class GLRoverWidget : public QOpenGLWidget, protected QOpenGLFunctions
@@ -27,7 +28,7 @@ class GLRoverWidget : public QOpenGLWidget, protected QOpenGLFunctions
 public:
     /**
      * @brief Constructor for GLRoverWidget.
-     * @param parent - pointer to the parent widget (default is nullptr).
+     * @param[in] parent - pointer to the parent widget (default is nullptr).
      */
     explicit GLRoverWidget(QWidget *parent = nullptr);
 
@@ -43,9 +44,9 @@ public:
 
     /**
      * @brief Sets the focal point for the camera.
-     * @param x - X-coordinate of the target.
-     * @param y - Y-coordinate of the target.
-     * @param z - Z-coordinate of the target.
+     * @param[in] x - X-coordinate of the target.
+     * @param[in] y - Y-coordinate of the target.
+     * @param[in] z - Z-coordinate of the target.
      */
     void setTargetCenter(float x, float y, float z);
 
@@ -57,8 +58,8 @@ protected:
 
     /**
      * @brief Updates the viewport when the widget is resized.
-     * @param w - new width.
-     * @param h - new height.
+     * @param[in] w - new width.
+     * @param[in] h - new height.
      */
     void resizeGL(int w, int h) override;
 
@@ -69,19 +70,19 @@ protected:
 
     /**
      * @brief Records the initial mouse position for camera rotation.
-     * @param event - mouse event payload.
+     * @param[in] event - mouse event payload.
      */
     void mousePressEvent(QMouseEvent *event) override;
 
     /**
      * @brief Calculates and applies camera rotation based on mouse drag.
-     * @param event - mouse event payload.
+     * @param[in] event - mouse event payload.
      */
     void mouseMoveEvent(QMouseEvent *event) override;
 
     /**
      * @brief Applies camera zoom based on the scroll wheel movement.
-     * @param event - wheel event payload.
+     * @param[in] event - wheel event payload.
      */
     void wheelEvent(QWheelEvent *event) override;
 
@@ -104,7 +105,7 @@ private:
 
     /**
      * @brief Parses and loads a 3D model from an OBJ file.
-     * @param path - file path to the .obj model.
+     * @param[in] path - file path to the .obj model.
      * @return true if the model loaded successfully, false otherwise.
      */
     bool loadOBJ(const QString &path);

@@ -26,7 +26,7 @@ void BatteryWidget::paintEvent(QPaintEvent *event) {
     painter.setPen(QPen(Qt::lightGray, 2));
     painter.drawRoundedRect(body, 2, 2);
 
-    // Rysowanie "cypla" (biegun dodatni)
+    // Rysowanie "cypla" 
     QRectF tip(width() - 4, height() / 3, 3, height() / 3);
     painter.setBrush(Qt::lightGray);
     painter.drawRect(tip);

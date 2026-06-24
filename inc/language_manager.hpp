@@ -16,8 +16,7 @@ enum class Language {
 /**
  * @class LanguageManager
  * @brief Singleton class that manages application language and translations.
- * 
- * Provides a centralized way to get translated strings throughout the application.
+ * * Provides a centralized way to get translated strings throughout the application.
  * Supports English and Polish. Emits signals when language changes to update UI.
  */
 class LanguageManager : public QObject {
@@ -32,14 +31,14 @@ public:
     
     /**
      * @brief Get translated string for given key
-     * @param key The translation key (e.g., "home_welcome_title")
+     * @param[in] key - the translation key (e.g., "home_welcome_title")
      * @return Translated string in current language, or key if not found
      */
     QString translate(const QString &key) const;
     
     /**
      * @brief Set the current language and emit languageChanged signal
-     * @param lang The language to switch to
+     * @param[in] lang - the language to switch to
      */
     void setLanguage(Language lang);
     
@@ -78,14 +77,14 @@ private:
      */
     LanguageManager& operator=(const LanguageManager&) = delete;
     
-    Language current_language_;
+    Language current_language_; /**< Stores the currently active application language. */
     
     /**
      * @brief Initialize all translation strings
      */
     void initializeTranslations();
     
-    // Translation storage: key -> (English, Polish)
+    /**< Translation storage: key -> (English, Polish) */
     std::map<QString, std::pair<QString, QString>> translations_;
 };
 

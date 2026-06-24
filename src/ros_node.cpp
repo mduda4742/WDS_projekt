@@ -42,7 +42,6 @@ RosNode::RosNode() : rclcpp::Node("qt_ros_node") {
         std::bind(&RosNode::pathCallback, this, _1)
     );
 
-    // Subscribe to merged odometry for robot pose and trajectory
     odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
         "merged_odom",
         10,
@@ -71,26 +70,22 @@ void RosNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
 
     emit odomReceived(state);
     
-    // Update robot pose for marker visualization
     robot_x_ = state.x;
     robot_y_ = state.y;
     robot_theta_ = state.yaw;
     emit robotPoseReceived(robot_x_, robot_y_, robot_theta_);
     
-    // Accumulate pose into path history
     path_x_.push_back(robot_x_);
     path_y_.push_back(robot_y_);
     
-    // Limit path history to last 1000 poses to avoid memory issues
     const size_t max_path_size = 1000;
     if (path_x_.size() > max_path_size) {
         path_x_.erase(path_x_.begin());
         path_y_.erase(path_y_.begin());
     }
     
-    // Emit path periodically (throttle to avoid excessive updates)
     double current_time = this->now().seconds();
-    if (current_time - last_path_emit_time_ > 0.1) {  // Emit path every 100ms
+    if (current_time - last_path_emit_time_ > 0.1) {  
         emit pathReceived(path_x_, path_y_);
         last_path_emit_time_ = current_time;
     }
@@ -155,10 +150,9 @@ void RosNode::pathCallback(const nav_msgs::msg::Path::SharedPtr msg) {
 }
 
 void RosNode::publishVelocity(double linear_x, double angular_z) {
-    // Create Twist message with provided velocities
     auto twist_msg = geometry_msgs::msg::Twist();
     twist_msg.linear.x = linear_x;   // Forward/backward
-    twist_msg.linear.y = 0.0;   // Left/right strafe
+    twist_msg.linear.y = 0.0;        // Left/right strafe
     twist_msg.linear.z = 0.0;        // No vertical movement
     twist_msg.angular.x = 0.0;       // No roll rotation
     twist_msg.angular.y = 0.0;       // No pitch rotation

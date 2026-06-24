@@ -18,15 +18,15 @@ class ControlPadWidget : public QWidget {
 public:
     /**
      * @brief Constructor for ControlPadWidget.
-     * @param parent - pointer to the parent widget (default is nullptr).
+     * @param[in] parent - pointer to the parent widget (default is nullptr).
      */
     explicit ControlPadWidget(QWidget *parent = nullptr);
 
 signals:
     /**
      * @brief Signal emitted periodically to request robot movement.
-     * @param vx - linear velocity request along the X-axis [m/s].
-     * @param vth - angular velocity request around the Z-axis (yaw) [rad/s].
+     * @param[in] vx - linear velocity request along the X-axis [m/s].
+     * @param[in] vth - angular velocity request around the Z-axis (yaw) [rad/s].
      */
     void velocityRequested(double vx, double vth);
 

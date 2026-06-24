@@ -7,10 +7,6 @@
 
 // MapWidget Implementation
 
-/**
- * @brief MapWidget constructor. Initializes the widget with black background for LIDAR visualization.
- * @param parent Parent widget
- */
 MapWidget::MapWidget(QWidget *parent) : QWidget(parent), hasData_(false), hasPath_(false), robot_x_(0.0), robot_y_(0.0), robot_theta_(0.0) {
     setStyleSheet("background-color: black;");
     setMinimumSize(400, 400);
@@ -175,11 +171,6 @@ void MapWidget::updateRobotPose(double x, double y, double theta) {
 
 // SlamPage Implementation
 
-/**
- * @brief SlamPage constructor. Sets up layout with MapWidget for visualization and 
- * 3x3 gamepad grid for movement controls.
- * @param parent Parent widget
- */
 SlamPage::SlamPage(QWidget *parent) : QWidget(parent), ros_node_(nullptr) {
     auto *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

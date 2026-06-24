@@ -18,7 +18,7 @@ QString LanguageManager::translate(const QString &key) const {
             return it->second.second;
         }
     }
-    return key; // Return key if not found
+    return key; 
 }
 
 void LanguageManager::setLanguage(Language lang) {
@@ -43,7 +43,7 @@ void LanguageManager::initializeTranslations() {
     
     // ===== HOME PAGE =====
     translations_["home_welcome_title"] = 
-        {"Welcome to the LeoDash Project Home Page!", "Witamy na stronie głównej projektu LeoDash!"};
+        {"Welcome to the LeoDash!", "Witamy na LeoDash!"};
     
     translations_["home_subtitle"] = 
         {"Authors: Radosław Mijał & Mateusz Duda", "Autorzy: Radosław Mijał & Mateusz Duda"};
@@ -51,17 +51,17 @@ void LanguageManager::initializeTranslations() {
     translations_["home_info_text"] = 
         {"<div style='text-align: left;'>"
          "<h3>Project Functionalities:</h3>"
-         "<ul>"
-         "<li><b>Home:</b> Welcome page and language selection.</li>"
-         "<li><b>SLAM:</b> Real-time LiDAR point cloud visualization and robot path tracking.</li>"
-         "<li><b>IMU & Control:</b> Telemetry data display (position, velocity, battery), camera stream, and manual robot control pad.</li>"
+         "<ul style='margin-left: 0; padding-left: 20px;'>" 
+         "<li><b>Home:</b> Language selection and rover model.</li>"
+         "<li><b>SLAM:</b> Laser and path visualization.</li>"
+         "<li><b>IMU:</b> Telemetry and 2.5D view.</li>"
          "</ul></div>", 
          "<div style='text-align: left;'>"
          "<h3>Funkcjonalności projektu:</h3>"
-         "<ul>"
-         "<li><b>Strona główna:</b> Ekran powitalny i wybór języka.</li>"
-         "<li><b>SLAM:</b> Wizualizacja chmury punktów z LiDAR-a w czasie rzeczywistym oraz śledzenie ścieżki robota.</li>"
-         "<li><b>IMU i Sterowanie:</b> Wyświetlanie danych telemetrycznych (pozycja, prędkość, bateria), strumień z kamery i panel ręcznego sterowania robotem.</li>"
+         "<ul style='margin-left: 0; padding-left: 20px;'>" 
+         "<li><b>Strona główna:</b> Wybór języka i model robota.</li>"
+         "<li><b>SLAM:</b> Wizualizacja lasera i ścieżki.</li>"
+         "<li><b>IMU:</b> Telemetria i widok 2.5D.</li>"
          "</ul></div>"};
     
     translations_["home_language_label"] = 

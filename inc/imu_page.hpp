@@ -15,7 +15,8 @@
 /**
  * @class ImuPage
  * @brief Widget class that displays real-time telemetry data.
- * * The ImuPage provides a graphical interface to show the data processed
+ * 
+ * The ImuPage provides a graphical interface to show the data processed
  * by the RosNode. It receives updates via slots and formats them into
  * human-readable text labels.
  */
@@ -26,7 +27,7 @@ public:
 
     /**
      * @brief Constructor for ImuPage.
-     * @param parent - pointer to the parent widget (default is nullptr).
+     * @param[in] parent - pointer to the parent widget (default is nullptr).
      */
     explicit ImuPage(QWidget *parent = nullptr);
 
@@ -37,7 +38,7 @@ public:
 
     /**
      * @brief Sets the ROS node instance to enable interaction with ROS 2 topics and services.
-     * @param node - pointer to the active RosNode instance.
+     * @param[in] node - pointer to the active RosNode instance.
      */
     void setRosNode(RosNode *node);
 
@@ -46,28 +47,28 @@ public slots:
      * @brief Updates the UI labels with new odometry and velocity data.
      * @details This slot receives the processed odomState, converts the
      * values (like Yaw to degrees), and updates the text on the labels.
-     * @param state - the current state of the robot containing pose and twist.
+     * @param[in] state - the current state of the robot containing pose and twist.
      */
     void updateOdom(odomState state);
 
     /**
      * @brief Updates the battery status label.
-     * @param voltage - current battery voltage in Volts [V].
+     * @param[in] voltage - current battery voltage in Volts [V].
      */
     void updateBattery(double voltage);
 
     /**
      * @brief Updates the camera display view with a new frame.
-     * @param img - the incoming camera image to be rendered on the UI.
+     * @param[in] img - the incoming camera image to be rendered on the UI.
      */
     void updateCameraImage(const QImage &img);
 
     /**
      * @brief Updates the 2.5D view with new laser scan data.
-     * @param ranges - vector of distance measurements in meters
-     * @param angle_min - minimum scan angle
-     * @param angle_max - maximum scan angle
-     * @param angle_increment - angular resolution
+     * @param[in] ranges - vector of distance measurements in meters
+     * @param[in] angle_min - minimum scan angle
+     * @param[in] angle_max - maximum scan angle
+     * @param[in] angle_increment - angular resolution
      */
     void updateLaserScan(const std::vector<float> &ranges, float angle_min, float angle_max, float angle_increment);
 

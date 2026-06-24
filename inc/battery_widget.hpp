@@ -17,20 +17,20 @@ class BatteryWidget : public QWidget {
 public:
     /**
      * @brief Constructor for BatteryWidget.
-     * @param parent - pointer to the parent widget (default is nullptr).
+     * @param[in] parent - pointer to the parent widget (default is nullptr).
      */
     explicit BatteryWidget(QWidget *parent = nullptr);
 
     /** 
      * @brief Sets the current battery level and triggers a UI refresh.
-     * @param level - value ranging from 0.0 (completely empty) to 1.0 (fully charged).
+     * @param[in] level - value ranging from 0.0 (completely empty) to 1.0 (fully charged).
      */
     void setLevel(double level);
 
 protected:
     /**
      * @brief Overridden paint event handler to draw the custom battery icon components.
-     * @param event - pointer to the incoming paint event.
+     * @param[in] event- pointer to the incoming paint event.
      */
     void paintEvent(QPaintEvent *event) override;
 
